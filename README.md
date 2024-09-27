@@ -13,3 +13,10 @@ There will also be a timer and/or a move counter to see how fast and efficiently
 This software is designed for people who like to play games/puzzles in their free time.
 I've always been interested in both the concept of time and the creation of games in general.
 To me this is a good opportunity to both create a puzzle I find interesting and to get more practice in with Java.
+
+## User Stories
+
+- As a user, I want to be able to complete a level and add it to my list of completed levels.
+- As a user, I want to be able to view my completed levels.
+- As a user, I want to be able to move my player in four directions.
+- As a user, I want to be able to select a level to play.
