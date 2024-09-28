@@ -5,8 +5,9 @@ public class Projectile {
     private Vector2 cellPosition;
     private Vector2 directionVector;
 
+    // REQUIRES: dirX and dirY can't be zero at the same time
     // EFFECTS: constructs a Projectile object
-    public Projectile(int posX, int posY, int dirX, int dirY, int speed) {
+    public Projectile(int posX, int posY, int dirX, int dirY) {
         // stub
     }
 
