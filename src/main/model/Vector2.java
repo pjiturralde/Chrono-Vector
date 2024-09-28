@@ -31,8 +31,9 @@ public class Vector2 {
     }
 
     // EFFECTS: returns a new Vector2 scaled by the given scalar value
-    public Vector2 Scale(int scalar) {
-        return new Vector2(this.posX * scalar, this.posY * scalar);
+    public void Scale(int scalar) {
+        this.posX *= scalar;
+        this.posY *= scalar;
     }
 
     // EFFECTS: returns posX
