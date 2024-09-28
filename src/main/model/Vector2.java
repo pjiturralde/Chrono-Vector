@@ -31,4 +31,14 @@ public class Vector2 {
     public Vector2 Scale(int scalar) {
         return null; // stub
     }
+
+    // EFFECTS: returns posX
+    public int getX() {
+        return -1; // stub
+    }
+
+    // EFFECTS: returns posY
+    public int getY() {
+        return -1; // stub
+    }
 }
