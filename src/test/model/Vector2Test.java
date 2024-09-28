@@ -19,14 +19,21 @@ public class Vector2Test {
 
     @Test
     void additionTest() {
-        v1.Add(v2);
+        v1.add(v2);
         assertEquals(v1.getX(), 1);
         assertEquals(v1.getY(), 2);
     }
 
     @Test
+    void setVectorTest() {
+        v1.setVector(2, 2);
+        assertEquals(v1.getX(), 2);
+        assertEquals(v1.getY(), 2);
+    }
+
+    @Test
     void subtractionTest() {
-        v1.Subtract(v2);
+        v1.subtract(v2);
         assertEquals(v1.getX(), -1);
         assertEquals(v1.getY(), -2);
     }
@@ -42,7 +49,7 @@ public class Vector2Test {
 
     @Test
     void scaleTest() {
-        v2.Scale(2);
+        v2.scale(2);
         assertEquals(v2.getX(), 2);
         assertEquals(v2.getY(), 4);
     }
