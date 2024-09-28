@@ -14,7 +14,7 @@ public class Projectile {
     // REQUIRES: direction cannot be a zero vector
     // MODIFIES: this
     // EFFECTS: changes current direction of Projectile to the given direction
-    public void changeDirection(Vector2 direction) {
+    public void changeDirection(int dirX, int dirY) {
         // stub
     }
 
@@ -34,4 +34,13 @@ public class Projectile {
     public Vector2 getPosition() {
         return null; // stub
     }
+
+    // EFFECTS: returns the Projectile's direction vector
+    public Vector2 getDirection() {
+        return null; // stub
+    }
+    
+    // for a linear projectile you should specify a start and end point.
+
+    // for a bouncing projectile no need.
 }
