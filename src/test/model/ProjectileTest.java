@@ -8,11 +8,13 @@ import org.junit.jupiter.api.Test;
 public class ProjectileTest {
     private Projectile p1;
     private Projectile p2;
+    private Projectile p3;
 
     @BeforeEach
     void runBefore() {
-        p1 = new Projectile(0, 0, 1, 1);
-        p2 = new Projectile(1, 2, 1, 0);
+        p1 = new Projectile(0, 0, 1, 1, 1);
+        p2 = new Projectile(1, 2, 1, 0, 1);
+        p3 = new Projectile(0, 0, 1, 1, 1, true);
     }
 
     @Test
@@ -43,8 +45,16 @@ public class ProjectileTest {
         int pointX = p1.getPosition().getX();
         int pointY = p1.getPosition().getY();
 
-        assertEquals(pointX, -1);
-        assertEquals(pointY, -1);
+        assertEquals(pointX, 0);
+        assertEquals(pointY, 0);
+
+        p3.moveBackward();
+
+        pointX = p3.getPosition().getX();
+        pointY = p3.getPosition().getY();
+
+        assertEquals(pointX, 1);
+        assertEquals(pointY, 1);
     }
 
     @Test
