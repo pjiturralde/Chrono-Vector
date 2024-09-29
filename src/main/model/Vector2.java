@@ -40,7 +40,8 @@ public class Vector2 {
         return this.pointX < other.pointX || this.pointY < other.pointY; // stub
     }
 
-    // EFFECTS: returns a new Vector2 scaled by the given scalar value
+    // MODIFIES: this
+    // EFFECTS: rescales Vector by given scalar value
     public void rescale(int scalar) {
         this.pointX *= scalar;
         this.pointY *= scalar;
