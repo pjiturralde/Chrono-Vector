@@ -6,18 +6,18 @@ public class Player {
 
     // EFFECTS: constructs a Player object
     public Player(int posX, int posY) {
-        // stub
+        this.position = new Vector2(posX, posY);
     }
 
     // REQUIRES: (dirX, dirY) must be normalized eg. (1,0), (0,1), (-1, 0), or (0,-1)
     // MODIFIES: this
     // EFFECTS: moves player one cell in the given direction
     public void move(int dirX, int dirY) {
-        // stub
+        this.position.add(new Vector2(dirX, dirY));
     }
 
     // EFFECTS: returns Player's position
     public Vector2 getPosition() {
-        return null; // stub
+        return position;
     }
 }
