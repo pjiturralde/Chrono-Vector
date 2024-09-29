@@ -8,36 +8,37 @@ public class Projectile {
     // REQUIRES: dirX and dirY can't be zero at the same time
     // EFFECTS: constructs a Projectile object
     public Projectile(int posX, int posY, int dirX, int dirY) {
-        // stub
+        this.cellPosition = new Vector2(posX, posY);
+        this.directionVector = new Vector2(dirX, dirY);
     }
 
     // REQUIRES: direction cannot be a zero vector
     // MODIFIES: this
     // EFFECTS: changes current direction of Projectile to the given direction
     public void changeDirection(int dirX, int dirY) {
-        // stub
+        this.directionVector = new Vector2(dirX, dirY);
     }
 
     // MODIFIES: this
     // EFFECTS: moves projectile forwards depending on direction and speed
     public void moveForward() {
-        // stub
+        cellPosition.add(directionVector);
     }
 
     // MODIFIES: this
     // EFFECTS: moves projectile backwards depending on direction and speed
     public void moveBackward() {
-        // stub
+        cellPosition.subtract(directionVector);
     }
 
     // EFFECTS: returns the Projectile's position
     public Vector2 getPosition() {
-        return null; // stub
+        return cellPosition;
     }
 
     // EFFECTS: returns the Projectile's direction vector
     public Vector2 getDirection() {
-        return null; // stub
+        return directionVector;
     }
     
     // for a linear projectile you should specify a start and end point.
