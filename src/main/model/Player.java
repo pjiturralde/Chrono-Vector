@@ -2,7 +2,7 @@ package model;
 
 // A class representing a Player object
 public class Player {
-    Vector2 position;
+    private Vector2 position;
 
     // EFFECTS: constructs a Player object
     public Player(int posX, int posY) {

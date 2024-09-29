@@ -1,5 +1,6 @@
 package model;
 
+// A class representing a Wall object with size and position vectors
 public class Wall {
     private Vector2 size;
     private Vector2 position;
