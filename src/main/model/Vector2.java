@@ -30,8 +30,18 @@ public class Vector2 {
         return pointX == other.pointX && pointY == other.pointY;
     }
 
+    // EFFECTS: returns if pointX > other.pointX or pointY > other.pointY
+    public boolean isMoreThan(Vector2 other) {
+        return this.pointX > other.pointX || this.pointY > other.pointY; // stub
+    }
+
+    // EFFECTS: returns if pointX < other.pointX or pointY < other.pointY
+    public boolean isLessThan(Vector2 other) {
+        return this.pointX < other.pointX || this.pointY < other.pointY; // stub
+    }
+
     // EFFECTS: returns a new Vector2 scaled by the given scalar value
-    public void scale(int scalar) {
+    public void rescale(int scalar) {
         this.pointX *= scalar;
         this.pointY *= scalar;
     }
@@ -51,5 +61,10 @@ public class Vector2 {
     // EFFECTS: returns posY
     public int getY() {
         return pointY;
+    }
+
+    // EFFECTS: returns a new Vector2 scaled by the given scalar value
+    public static Vector2 scale(Vector2 v, int scalar) {
+        return new Vector2(v.getX() * scalar, v.getY() * scalar);
     }
 }

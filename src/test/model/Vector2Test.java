@@ -48,9 +48,16 @@ public class Vector2Test {
     }
 
     @Test
-    void scaleTest() {
-        v2.scale(2);
+    void rescaleTest() {
+        v2.rescale(2);
         assertEquals(v2.getX(), 2);
         assertEquals(v2.getY(), 4);
+    }
+
+    @Test
+    void scaleTest() {
+        Vector2 newVector = Vector2.scale(v2, 2);
+        assertEquals(newVector.getX(), 2);
+        assertEquals(newVector.getY(), 4);
     }
 }
