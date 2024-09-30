@@ -20,8 +20,8 @@ public class LevelTest {
 
     @Test
     void addProjectileTest() {
-        Projectile p1 = new Projectile(0, 0, 1, 0, 0);
-        Projectile p2 = new Projectile(2, 3, 1, 1, 0);
+        Projectile p1 = new Projectile(0, 0, 1, 0, 1);
+        Projectile p2 = new Projectile(2, 3, 1, 1, 1);
 
         l1.addProjectile(p1);
         l1.addProjectile(p2);
@@ -46,8 +46,8 @@ public class LevelTest {
 
     @Test
     void checkPlayerMovementTest() {
-        Projectile p1 = new Projectile(0, 0, 1, 0, 0);
-        Projectile p2 = new Projectile(2, 3, 1, 1, 0);
+        Projectile p1 = new Projectile(0, 0, 1, 0, 1);
+        Projectile p2 = new Projectile(2, 3, 1, 1, 1);
 
         l1.addProjectile(p1);
         l1.addProjectile(p2);
@@ -70,11 +70,22 @@ public class LevelTest {
         Wall wall = new Wall(1, 1, 1, 1);
         l1.addWall(wall);
 
-        l1.checkCollision(player, 1, 0);
+        l1.checkCollision(player, 1, 0); // we check collision after player has moved and pass their past moveDir
 
         Vector2 position = player.getPosition();
         assertEquals(position.getX(), 0);
         assertEquals(position.getY(), 1);
+
+        Projectile projectile = new Projectile(0, 1, 1, 0, 1);
+        l1.addProjectile(projectile);
+
+        position = player.getPosition();
+        assertEquals(position.getX(), 0);
+        assertEquals(position.getY(), 1);
+
+        l1.checkCollision(player, 1, 0);
+
+        assertTrue(l1.isLevelLost());
     }
 
     @Test
@@ -102,5 +113,10 @@ public class LevelTest {
         ArrayList<Wall> wallList = l1.getWalls();
         assertEquals(wallList.getFirst(), w1);
         assertEquals(wallList.getLast(), w2); 
+    }
+
+    @Test
+    void isLevelLostTest() {
+        assertFalse(l1.isLevelLost());
     }
 }
