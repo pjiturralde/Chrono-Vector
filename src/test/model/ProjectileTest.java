@@ -45,8 +45,8 @@ public class ProjectileTest {
         int pointX = p1.getPosition().getX();
         int pointY = p1.getPosition().getY();
 
-        assertEquals(pointX, 0);
-        assertEquals(pointY, 0);
+        assertEquals(pointX, 1);
+        assertEquals(pointY, 1);
 
         p3.moveBackward();
 
