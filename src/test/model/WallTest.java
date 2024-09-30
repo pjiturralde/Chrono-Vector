@@ -16,8 +16,8 @@ public class WallTest {
     }
 
     @Test
-    void getPositionTest() {
-        Vector2 position = w1.getPosition();
+    void getStartPointTest() {
+        Vector2 position = w1.getStartPoint();
 
         int pointX = position.getX();
         int pointY = position.getY();
@@ -25,7 +25,7 @@ public class WallTest {
         assertEquals(pointX, 1);
         assertEquals(pointY, 1);
 
-        position = w2.getPosition();
+        position = w2.getStartPoint();
 
         pointX = position.getX();
         pointY = position.getY();
@@ -35,19 +35,19 @@ public class WallTest {
     }
 
     @Test
-    void getSizeTest() {
-        Vector2 size = w1.getSize();
+    void getEndPointTest() {
+        Vector2 position = w1.getEndPoint();
 
-        int pointX = size.getX();
-        int pointY = size.getY();
+        int pointX = position.getX();
+        int pointY = position.getY();
 
         assertEquals(pointX, 3);
         assertEquals(pointY, 3);
 
-        size = w2.getSize();
+        position = w2.getEndPoint();
 
-        pointX = size.getX();
-        pointY = size.getY();
+        pointX = position.getX();
+        pointY = position.getY();
 
         assertEquals(pointX, 5);
         assertEquals(pointY, 7);

@@ -2,22 +2,22 @@ package model;
 
 // A class representing a Wall object with size and position vectors
 public class Wall {
-    private Vector2 size;
-    private Vector2 position;
+    private Vector2 startPoint;
+    private Vector2 endPoint;
 
     // EFFECTS: constructs a Wall object
-    public Wall(int posX, int posY, int sizeX, int sizeY) {
-        this.position = new Vector2(posX, posY);
-        this.size = new Vector2(sizeX, sizeY);
+    public Wall(int startPosX, int startPosY, int endPosX, int endPosY) {
+        this.startPoint = new Vector2(startPosX, startPosY);
+        this.endPoint = new Vector2(endPosX, endPosY);
     }
 
-    // EFFECTS: returns size vector
-    public Vector2 getSize() {
-        return size; // stub
+    // EFFECTS: returns start point vector
+    public Vector2 getStartPoint() {
+        return startPoint;
     }
 
-    // EFFECTS: returns position vector
-    public Vector2 getPosition() {
-        return position; // stub
+    // EFFECTS: returns end point vector
+    public Vector2 getEndPoint() {
+        return endPoint;
     }
 }

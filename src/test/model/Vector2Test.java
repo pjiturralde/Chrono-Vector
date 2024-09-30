@@ -40,10 +40,10 @@ public class Vector2Test {
 
     @Test
     void isEqualTest() {
-        boolean isEqual = v1.isEqual(v3);
+        boolean isEqual = v1.isEqualTo(v3);
         assertTrue(isEqual);
 
-        isEqual = v1.isEqual(v2);
+        isEqual = v1.isEqualTo(v2);
         assertFalse(isEqual);
     }
 

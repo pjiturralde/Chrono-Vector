@@ -26,18 +26,28 @@ public class Vector2 {
     }
     
     // EFFECTS: returns if this Vector2 and other Vector2 have equal coordinates
-    public boolean isEqual(Vector2 other) {
+    public boolean isEqualTo(Vector2 other) {
         return pointX == other.pointX && pointY == other.pointY;
     }
 
     // EFFECTS: returns if pointX > other.pointX or pointY > other.pointY
     public boolean isMoreThan(Vector2 other) {
-        return this.pointX > other.pointX || this.pointY > other.pointY; // stub
+        return this.pointX > other.pointX || this.pointY > other.pointY;
     }
 
     // EFFECTS: returns if pointX < other.pointX or pointY < other.pointY
     public boolean isLessThan(Vector2 other) {
-        return this.pointX < other.pointX || this.pointY < other.pointY; // stub
+        return this.pointX < other.pointX || this.pointY < other.pointY;
+    }
+
+    // EFFECTS: returns if pointX >= other.pointX and pointY >= other.pointY
+    public boolean isMoreThanEqualTo(Vector2 other) {
+        return this.pointX >= other.pointX && this.pointY >= other.pointY;
+    }
+
+    // EFFECTS: returns if pointX <= other.pointX and pointY <= other.pointY
+    public boolean isLessThanEqualTo(Vector2 other) {
+        return this.pointX <= other.pointX && this.pointY <= other.pointY;
     }
 
     // MODIFIES: this
