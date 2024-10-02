@@ -54,7 +54,7 @@ public class Level {
     // REQUIRES: timeScale must be either 1, or -1
     // MODIFIES: this
     // EFFECTS: calls either moveForward or moveBackward on every projectile based on given timeScale
-    private void moveAllProjectiles(int timeScale) {
+    public void moveAllProjectiles(int timeScale) {
         Iterator<Projectile> iterator = projectileList.iterator();
 
         while (iterator.hasNext()) {
@@ -109,6 +109,18 @@ public class Level {
             }
         }
         // come back to this method
+    }
+
+    // MODIFIES: this
+    // EFFECTS: resets the Level
+    public void reset() {
+        Iterator<Projectile> iterator = projectileList.iterator();
+
+        while (iterator.hasNext()) {
+            Projectile projectile = iterator.next();
+            projectile.reset();
+        }
+        // don't forget once pressure plates added to reset them as well
     }
 
     // EFFECTS: returns Level's list of Projectiles
