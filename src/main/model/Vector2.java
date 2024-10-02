@@ -64,6 +64,13 @@ public class Vector2 {
         this.pointY = y;
     }
 
+    // MODIFIES: this
+    // EFFECTS: sets vector to given vector
+    public void setVector(Vector2 other) {
+        this.pointX = other.pointX;
+        this.pointY = other.pointY;
+    }
+
     // EFFECTS: returns posX
     public int getX() {
         return pointX;
