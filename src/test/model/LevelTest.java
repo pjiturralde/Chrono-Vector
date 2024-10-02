@@ -90,8 +90,8 @@ public class LevelTest {
 
     @Test
     void getProjectilesTest() {
-        Projectile p1 = new Projectile(0, 0, 1, 0, 0);
-        Projectile p2 = new Projectile(2, 3, 1, 1, 0);
+        Projectile p1 = new Projectile(0, 0, 1, 0, 100);
+        Projectile p2 = new Projectile(2, 3, 1, 1, 100);
 
         l1.addProjectile(p1);
         l1.addProjectile(p2);
@@ -118,5 +118,65 @@ public class LevelTest {
     @Test
     void isLevelLostTest() {
         assertFalse(l1.isLevelLost());
+    }
+
+    @Test
+    void moveAllProjectilesTest() {
+        Projectile p1 = new Projectile(0, 0, 1, 1, 100);
+        Projectile p2 = new Projectile(2, 3, 1, 0, 100);
+
+        l1.addProjectile(p1);
+        l1.addProjectile(p2);
+
+        l1.moveAllProjectiles(1);
+
+        int pointX = p1.getPosition().getX();
+        int pointY = p1.getPosition().getY();
+
+        assertEquals(pointX, 1);
+        assertEquals(pointY, 1);
+
+        pointX = p2.getPosition().getX();
+        pointY = p2.getPosition().getY();
+
+        assertEquals(pointX, 3);
+        assertEquals(pointY, 3);
+    }
+
+    @Test
+    void resetTest() {
+        Projectile p1 = new Projectile(0, 0, 1, 0, 100);
+        Projectile p2 = new Projectile(2, 3, 1, 1, 100);
+
+        l1.addProjectile(p1);
+        l1.addProjectile(p2);
+
+        l1.moveAllProjectiles(1);
+
+        int pointX = p1.getPosition().getX();
+        int pointY = p1.getPosition().getY();
+
+        assertEquals(pointX, 1);
+        assertEquals(pointY, 0);
+
+        pointX = p2.getPosition().getX();
+        pointY = p2.getPosition().getY();
+
+        assertEquals(pointX, 3);
+        assertEquals(pointY, 4);
+
+        l1.reset();
+
+        pointX = p1.getPosition().getX();
+        pointY = p1.getPosition().getY();
+
+        assertEquals(pointX, 0);
+        assertEquals(pointY, 0);
+
+        pointX = p2.getPosition().getX();
+        pointY = p2.getPosition().getY();
+
+        assertEquals(pointX, 2);
+        assertEquals(pointY, 3);
     }
 }
