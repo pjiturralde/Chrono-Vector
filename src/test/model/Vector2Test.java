@@ -29,6 +29,12 @@ public class Vector2Test {
         v1.setVector(2, 2);
         assertEquals(v1.getX(), 2);
         assertEquals(v1.getY(), 2);
+
+        Vector2 vector = new Vector2(0, 0);
+
+        v1.setVector(vector);
+        assertEquals(v1.getX(), 0);
+        assertEquals(v1.getY(), 0);
     }
 
     @Test
