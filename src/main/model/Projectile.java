@@ -6,6 +6,7 @@ public class Projectile {
     private Vector2 startPosition;
     private Vector2 endPosition;
     private Vector2 directionVector;
+    private Vector2 startDirection;
     private boolean isBouncy;
 
     // REQUIRES: dirX and dirY can't be zero at the same time and
@@ -17,6 +18,7 @@ public class Projectile {
         this.startPosition = new Vector2(startPosX, startPosY);
         this.endPosition = new Vector2(startPosX + dirX * range, startPosY + dirY * range);
         this.directionVector = new Vector2(dirX, dirY);
+        this.startDirection = new Vector2(dirX, dirY);
         this.isBouncy = isBouncy;
     }
 
@@ -25,18 +27,14 @@ public class Projectile {
     //           range > 0
     // EFFECTS: constructs a Projectile object, calculates the endPosition and sets isBouncy to false
     public Projectile(int startPosX, int startPosY, int dirX, int dirY, int range) {
-        this.position = new Vector2(startPosX, startPosY);
-        this.startPosition = new Vector2(startPosX, startPosY);
-        this.endPosition = new Vector2(startPosX + dirX * range, startPosY + dirY * range);
-        this.directionVector = new Vector2(dirX, dirY);
-        this.isBouncy = false;
+        this(startPosX, startPosY, dirX, dirY, range, false);
     }
 
     // REQUIRES: direction cannot be a zero vector
     // MODIFIES: this
     // EFFECTS: changes current direction of Projectile to the given direction
     public void changeDirection(int dirX, int dirY) {
-        this.directionVector = new Vector2(dirX, dirY);
+        this.directionVector.setVector(dirX, dirY);
     }
 
     // MODIFIES: this
@@ -50,7 +48,7 @@ public class Projectile {
                 directionVector.rescale(-1);
                 position.add(Vector2.scale(directionVector, 2));
             } else {
-                position = startPosition;
+                position.setVector(startPosition);
             }
         };
     }
@@ -66,9 +64,16 @@ public class Projectile {
                 directionVector.rescale(-1);
                 position.subtract(Vector2.scale(directionVector, 2));
             } else {
-                position = endPosition;
+                position.setVector(endPosition);
             }
         };
+    }
+
+    // MODIFIES: this
+    // EFFECTS: sets the Projectile's position and direction to default
+    public void reset() {
+        this.directionVector.setVector(startDirection);
+        this.position.setVector(startPosition);
     }
 
     // EFFECTS: returns the Projectile's position
