@@ -9,12 +9,14 @@ public class ProjectileTest {
     private Projectile p1;
     private Projectile p2;
     private Projectile p3;
+    private Projectile p4;
 
     @BeforeEach
     void runBefore() {
         p1 = new Projectile(0, 0, 1, 1, 1);
         p2 = new Projectile(1, 2, 1, 0, 1);
         p3 = new Projectile(0, 0, 1, 1, 1, true);
+        p4 = new Projectile(0, 0, 1, 0, 100);
     }
 
     @Test
@@ -84,6 +86,49 @@ public class ProjectileTest {
         pointY = p2.getDirection().getY();
 
         assertEquals(pointX, 1);
+        assertEquals(pointY, 0);
+    }
+
+    @Test
+    void changeDirectionTest() {
+        p4.changeDirection(0, 1);
+
+        int pointX = p4.getDirection().getX();
+        int pointY = p4.getDirection().getY();
+
+        assertEquals(pointX, 0);
+        assertEquals(pointY, 1);
+    }
+
+    @Test
+    void resetTest() {
+        p4.moveForward();
+        p4.changeDirection(0, 1);
+
+        int pointX = p4.getDirection().getX();
+        int pointY = p4.getDirection().getY();
+
+        assertEquals(pointX, 0);
+        assertEquals(pointY, 1);
+
+        pointX = p4.getPosition().getX();
+        pointY = p4.getPosition().getY();
+
+        assertEquals(pointX, 1);
+        assertEquals(pointY, 0);
+
+        p4.reset();
+
+        pointX = p4.getDirection().getX();
+        pointY = p4.getDirection().getY();
+
+        assertEquals(pointX, 1);
+        assertEquals(pointY, 0);
+
+        pointX = p4.getPosition().getX();
+        pointY = p4.getPosition().getY();
+
+        assertEquals(pointX, 0);
         assertEquals(pointY, 0);
     }
 }
