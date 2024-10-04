@@ -11,13 +11,17 @@ public class Level {
     private Vector2 timeDirection;
     private LinkedList<Projectile> projectileList;
     private ArrayList<Wall> wallList;
+    private Vector2 startPosition;
+    private Vector2 goalPosition;
 
     // REQUIRES: either timeDirX or timeDirY has to be 0 and
     //           Vector2(timeDirX, timeDirY) needs to have a magnitude of exactly 1
     //           eg. (0,1), (1,0), (-1, 0), ...
     // EFFECTS: constructs a Level object with an empty projectileList and empty wallList
-    public Level(String name, int timeDirX, int timeDirY) {
+    public Level(String name, int startPosX, int startPosY, int goalPosX, int goalPosY, int timeDirX, int timeDirY) {
         this.name = name;
+        this.startPosition = new Vector2(startPosX, startPosY);
+        this.goalPosition = new Vector2(goalPosX, goalPosY);
         this.timeDirection = new Vector2(timeDirX, timeDirY);
         this.projectileList = new LinkedList<Projectile>();
         this.wallList = new ArrayList<Wall>();
@@ -28,6 +32,11 @@ public class Level {
     // EFFECT: adds Projectile object to list of Projectiles
     public void addProjectile(Projectile p) {
         projectileList.addLast(p);
+    }
+
+    // EFFECT: adds Projectile object to list of Projectiles
+    public void addProjectile(int startPosX, int startPosY, int dirX, int dirY, int range, boolean isBouncy) {
+        projectileList.addLast(new Projectile(startPosX, startPosY, dirX, dirY, range, isBouncy));
     }
 
     // MODIFIES: this
@@ -131,6 +140,16 @@ public class Level {
     // EFFECTS: returns Level's list of Walls
     public ArrayList<Wall>  getWalls() {
         return wallList;
+    }
+
+    // EFFECTS: returns Level's start position
+    public Vector2 getStartPosition() {
+        return startPosition;
+    }
+
+    // EFFECTS: returns Level's goal position
+    public Vector2 getGoalPosition() {
+        return goalPosition;
     }
 
     // EFFECTS: returns if the Level has been lost
