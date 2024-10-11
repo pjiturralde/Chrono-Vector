@@ -1,6 +1,6 @@
 package model;
 
-// A class representing a Vector object with two coordinates
+// A class representing a Vector object with two coordinates pointX and pointY
 public class Vector2 {
     private int pointX;
     private int pointY;
@@ -26,27 +26,38 @@ public class Vector2 {
     }
     
     // EFFECTS: returns if this Vector2 and other Vector2 have equal coordinates
-    public boolean isEqualTo(Vector2 other) {
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+    
+        if (!(obj instanceof Vector2)) {
+            return false;
+        }
+
+        Vector2 other = (Vector2) obj;
+
         return pointX == other.pointX && pointY == other.pointY;
     }
 
     // EFFECTS: returns if pointX > other.pointX or pointY > other.pointY
-    public boolean isMoreThan(Vector2 other) {
+    public boolean moreThan(Vector2 other) {
         return this.pointX > other.pointX || this.pointY > other.pointY;
     }
 
     // EFFECTS: returns if pointX < other.pointX or pointY < other.pointY
-    public boolean isLessThan(Vector2 other) {
+    public boolean lessThan(Vector2 other) {
         return this.pointX < other.pointX || this.pointY < other.pointY;
     }
 
     // EFFECTS: returns if pointX >= other.pointX and pointY >= other.pointY
-    public boolean isMoreThanEqualTo(Vector2 other) {
+    public boolean moreThanEqualTo(Vector2 other) {
         return this.pointX >= other.pointX && this.pointY >= other.pointY;
     }
 
     // EFFECTS: returns if pointX <= other.pointX and pointY <= other.pointY
-    public boolean isLessThanEqualTo(Vector2 other) {
+    public boolean lessThanEqualTo(Vector2 other) {
         return this.pointX <= other.pointX && this.pointY <= other.pointY;
     }
 

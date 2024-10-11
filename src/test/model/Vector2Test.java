@@ -45,11 +45,18 @@ public class Vector2Test {
     }
 
     @Test
-    void isEqualTest() {
-        boolean isEqual = v1.isEqualTo(v3);
+    void equalsTest() {
+        boolean isEqual = v1.equals(v3);
         assertTrue(isEqual);
 
-        isEqual = v1.isEqualTo(v2);
+        isEqual = v1.equals(v2);
+        assertFalse(isEqual);
+
+        isEqual = v1.equals(v1);
+        assertTrue(isEqual);
+
+        Level level = new Level(null, 0, 0, 3, 2, 100, 100, 0, 1);
+        isEqual = v1.equals(level);
         assertFalse(isEqual);
     }
 
