@@ -72,8 +72,9 @@ public class GameApp {
             command = promptUser();
             char charCommand = command.charAt(0);
 
-            if (command.length() == 1 && Character.isDigit(charCommand) && Character.getNumericValue(charCommand) > 0 && Character.getNumericValue(charCommand) <= levels.size()) {
-                int index = Character.getNumericValue(charCommand)-1;
+            if (command.length() == 1 && Character.isDigit(charCommand) && Character.getNumericValue(charCommand) > 0
+                    && Character.getNumericValue(charCommand) <= levels.size()) {
+                int index = Character.getNumericValue(charCommand) - 1;
 
                 currentLevel = levels.get(index);
                 inGame = true;
@@ -83,16 +84,21 @@ public class GameApp {
                 System.out.println("Selection not valid...");
             }
         } else if (command.equals("k")) {
-            if (player.getCompletedLevels().size() > 0) {
-                for (Level level : player.getCompletedLevels()) {
-                    System.out.println(level.getName());
-                }
-            } else {
-                System.out.println("You have no completed levels");
-            }
+            displayCompletedLevels();
         } else {
             System.out.println("Selection not valid...");
         }
+    }
+
+    // EFFECTS: displays completed levels
+    private void displayCompletedLevels() {
+        if (player.getCompletedLevels().size() > 0) {
+            for (Level level : player.getCompletedLevels()) {
+                System.out.println(level.getName());
+            }
+        } else {
+            System.out.println("You have no completed levels");
+        } 
     }
 
     // MODIFIES: this
@@ -167,7 +173,7 @@ public class GameApp {
         System.out.println("\nSelect a level");
 
         for (int i = 0; i < levels.size(); i++) {
-            System.out.println((i+1) + " -> " + levels.get(i).getName());
+            System.out.println((i + 1) + " -> " + levels.get(i).getName());
         }
     }
 
@@ -210,18 +216,9 @@ public class GameApp {
     // REQUIRES: createCurrentAsciiMap() must be called first
     // MODIFIES: this
     // EFFECTS: prints ascii art of level
+    @SuppressWarnings("methodlength")
     private void displayCurrentAsciiMap() {
-        System.out.println("\nPlayer = A\n");
-
-        Vector2 timeDir = currentLevel.getTimeDirection();
-        String timeDirString;
-        if (timeDir.getX() == 0) {
-            timeDirString = timeDir.getY() == 1 ? "down" : "up";
-        } else {
-            timeDirString = timeDir.getX() == 1 ? "right" : "left";
-        }
-
-        System.out.println("Time vector = " + timeDirString + "\n");
+        displayLevelInformation();
 
         String mapRow = "";
         int prevPosX = -1;
@@ -243,23 +240,40 @@ public class GameApp {
                 System.out.println(mapRow);
                 mapRow = "";
             }
-            
-            if (!character.equals("A") && player.getPosition().getY() == obj.getPosition().getY() && player.getPosition().getX() < obj.getPosition().getX() && player.getPosition().getX() > prevPosX) {
+
+            if (!character.equals("A") && player.getPosition().getY() == obj.getPosition().getY()
+                    && player.getPosition().getX() < obj.getPosition().getX()
+                    && player.getPosition().getX() > prevPosX) {
                 int difference1 = player.getPosition().getX() - prevPosX;
                 int difference2 = posX - player.getPosition().getX();
-                mapRow += "  ".repeat(difference1-1) + " A" + "  ".repeat(difference2-1) + character;
+                mapRow += "  ".repeat(difference1 - 1) + " A" + "  ".repeat(difference2 - 1) + character;
                 prevPosX = posX;
             } else {
                 int difference = posX - prevPosX;
-                mapRow += "  ".repeat(difference-1) + character;
+                mapRow += "  ".repeat(difference - 1) + character;
                 prevPosX = posX;
             }
-            if (obj.equals(currentAsciiMap.getLast())) {
+            if (obj.equals(currentAsciiMap.get(currentAsciiMap.size() - 1))) {
                 System.out.println(mapRow);
             }
         }
 
         System.out.println("");
+    }
+
+    // EFFECTS: displays important level information
+    private void displayLevelInformation() {
+        System.out.println("\nPlayer = A\n");
+
+        Vector2 timeDir = currentLevel.getTimeDirection();
+        String timeDirString;
+        if (timeDir.getX() == 0) {
+            timeDirString = timeDir.getY() == 1 ? "down" : "up";
+        } else {
+            timeDirString = timeDir.getX() == 1 ? "right" : "left";
+        }
+
+        System.out.println("Time vector = " + timeDirString + "\n");
     }
 
     // REQUIRES: currentLevel != null
@@ -277,7 +291,8 @@ public class GameApp {
         Collections.sort(currentAsciiMap);
     }
 
-    // EFFECTS: adds Projectiles from currentLevel to currentAsciiMap as AsciiObjects
+    // EFFECTS: adds Projectiles from currentLevel to currentAsciiMap as
+    // AsciiObjects
     private void createProjectileAscii() {
         ArrayList<Projectile> projectiles = currentLevel.getProjectiles();
         Iterator<Projectile> iterator = projectiles.iterator();
@@ -298,13 +313,17 @@ public class GameApp {
         while (iterator.hasNext()) {
             Wall wall = iterator.next();
 
-            int startX = wall.getStartPoint().getX() <= wall.getEndPoint().getX() ? wall.getStartPoint().getX() : wall.getEndPoint().getX();
-            int endX = wall.getStartPoint().getX() <= wall.getEndPoint().getX() ? wall.getEndPoint().getX() : wall.getStartPoint().getX();
-    
+            int startX = wall.getStartPoint().getX() <= wall.getEndPoint().getX() ? wall.getStartPoint().getX()
+                    : wall.getEndPoint().getX();
+            int endX = wall.getStartPoint().getX() <= wall.getEndPoint().getX() ? wall.getEndPoint().getX()
+                    : wall.getStartPoint().getX();
+
             for (int x = startX; x <= endX; x++) {
-                int startY = wall.getStartPoint().getY() <= wall.getEndPoint().getY() ? wall.getStartPoint().getY() : wall.getEndPoint().getY();
-                int endY = wall.getStartPoint().getY() <= wall.getEndPoint().getY() ? wall.getEndPoint().getY() : wall.getStartPoint().getY();
-    
+                int startY = wall.getStartPoint().getY() <= wall.getEndPoint().getY() ? wall.getStartPoint().getY()
+                        : wall.getEndPoint().getY();
+                int endY = wall.getStartPoint().getY() <= wall.getEndPoint().getY() ? wall.getEndPoint().getY()
+                        : wall.getStartPoint().getY();
+
                 for (int y = startY; y <= endY; y++) {
                     AsciiObject obj = new AsciiObject("#", new Vector2(x, y));
                     currentAsciiMap.add(obj);
