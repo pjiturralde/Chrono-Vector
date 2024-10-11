@@ -98,7 +98,7 @@ public class GameApp {
             }
         } else {
             System.out.println("You have no completed levels");
-        } 
+        }
     }
 
     // MODIFIES: this
@@ -224,11 +224,7 @@ public class GameApp {
         int prevPosX = -1;
         int prevPosY = 0;
 
-        Iterator<AsciiObject> iterator = currentAsciiMap.iterator();
-
-        while (iterator.hasNext()) {
-            AsciiObject obj = iterator.next();
-
+        for (AsciiObject obj : currentAsciiMap) {
             int posX = obj.getPosition().getX();
             int posY = obj.getPosition().getY();
             String character = obj.getPosition().equals(player.getPosition()) ? " A" : " " + obj.getCharacter();
@@ -247,18 +243,15 @@ public class GameApp {
                 int difference1 = player.getPosition().getX() - prevPosX;
                 int difference2 = posX - player.getPosition().getX();
                 mapRow += "  ".repeat(difference1 - 1) + " A" + "  ".repeat(difference2 - 1) + character;
-                prevPosX = posX;
             } else {
                 int difference = posX - prevPosX;
                 mapRow += "  ".repeat(difference - 1) + character;
-                prevPosX = posX;
             }
+            prevPosX = posX;
             if (obj.equals(currentAsciiMap.get(currentAsciiMap.size() - 1))) {
-                System.out.println(mapRow);
+                System.out.println(mapRow + "\n");
             }
         }
-
-        System.out.println("");
     }
 
     // EFFECTS: displays important level information
