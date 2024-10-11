@@ -5,17 +5,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.LinkedList;
 import java.util.ArrayList;
 
 public class LevelTest {
     private Level l1;
-    private Level l2;
 
     @BeforeEach
     void runBefore() {
-        l1 = new Level("level X", 1, 0);
-        l2 = new Level("level Y", 0, -1);
+        l1 = new Level("level X", 1, 1, 5, 5, 100, 100, 1, 0);
     }
 
     @Test
@@ -26,9 +23,17 @@ public class LevelTest {
         l1.addProjectile(p1);
         l1.addProjectile(p2);
 
-        LinkedList<Projectile> projectileList = l1.getProjectiles();
+        ArrayList<Projectile> projectileList = l1.getProjectiles();
         assertEquals(projectileList.getFirst(), p1);
         assertEquals(projectileList.getLast(), p2);
+
+        l1.addProjectile(5, 8, 1, 0, 3, false);
+
+        Projectile px = l1.getProjectiles().getLast();
+        assertEquals(px.getPosition().getX(), 5);
+        assertEquals(px.getPosition().getY(), 8);
+        assertEquals(px.getDirection().getX(), 1);
+        assertEquals(px.getDirection().getY(), 0);
     }
 
     @Test
@@ -52,7 +57,7 @@ public class LevelTest {
         l1.addProjectile(p1);
         l1.addProjectile(p2);
 
-        LinkedList<Projectile> projectileList = l1.getProjectiles();
+        ArrayList<Projectile> projectileList = l1.getProjectiles();
 
         l1.checkPlayerMovement(1, 0);
         
@@ -61,6 +66,14 @@ public class LevelTest {
 
         assertEquals(projectileList.getLast().getPosition().getX(), 3);
         assertEquals(projectileList.getLast().getPosition().getY(), 4);
+
+        l1.checkPlayerMovement(-1, 0);
+
+        assertEquals(projectileList.getFirst().getPosition().getX(), 0);
+        assertEquals(projectileList.getFirst().getPosition().getY(), 0);
+
+        assertEquals(projectileList.getLast().getPosition().getX(), 2);
+        assertEquals(projectileList.getLast().getPosition().getY(), 3);
     }
 
     @Test
@@ -85,7 +98,28 @@ public class LevelTest {
 
         l1.checkCollision(player, 1, 0);
 
-        assertTrue(l1.isLevelLost());
+        assertTrue(l1.lost());
+
+        Player player2 = new Player(5, 5);
+
+        l1.checkCollision(player2, 1, 0);
+
+        assertTrue(l1.completed());
+
+        Player player3 = new Player(2, 2);
+
+        Projectile projectile2 = new Projectile(8, 8, 1, 0, 5);
+
+        wall = new Wall(2,2,2,2);
+        l1.addWall(wall);
+
+        l1.checkCollision(player3, -1, 0);
+
+        position = projectile2.getPosition();
+        Vector2 playerPos = player3.getPosition();
+
+        assertEquals(position.getX(), 8);
+        assertEquals(position.getY(), 8);
     }
 
     @Test
@@ -96,7 +130,7 @@ public class LevelTest {
         l1.addProjectile(p1);
         l1.addProjectile(p2);
 
-        LinkedList<Projectile> projectileList = l1.getProjectiles();
+        ArrayList<Projectile> projectileList = l1.getProjectiles();
 
         assertEquals(projectileList.getFirst(), p1);
         assertEquals(projectileList.getLast(), p2);
@@ -117,7 +151,7 @@ public class LevelTest {
 
     @Test
     void isLevelLostTest() {
-        assertFalse(l1.isLevelLost());
+        assertFalse(l1.lost());
     }
 
     @Test
@@ -140,6 +174,20 @@ public class LevelTest {
         pointY = p2.getPosition().getY();
 
         assertEquals(pointX, 3);
+        assertEquals(pointY, 3);
+
+        l1.moveAllProjectiles(-1);
+
+        pointX = p1.getPosition().getX();
+        pointY = p1.getPosition().getY();
+
+        assertEquals(pointX, 0);
+        assertEquals(pointY, 0);
+
+        pointX = p2.getPosition().getX();
+        pointY = p2.getPosition().getY();
+
+        assertEquals(pointX, 2);
         assertEquals(pointY, 3);
     }
 
@@ -178,5 +226,51 @@ public class LevelTest {
 
         assertEquals(pointX, 2);
         assertEquals(pointY, 3);
+    }
+
+    @Test
+    void getStartPositionTest() {
+        Vector2 startPos = l1.getStartPosition();
+
+        assertEquals(startPos.getX(), 1);
+        assertEquals(startPos.getY(), 1);
+    }
+
+    @Test
+    void getGoalPositionTest() {
+        Vector2 startPos = l1.getGoalPosition();
+
+        assertEquals(startPos.getX(), 5);
+        assertEquals(startPos.getY(), 5);
+    }
+
+    @Test
+    void getTimeDirectionTest() {
+        Vector2 direction = l1.getTimeDirection();
+
+        assertEquals(direction.getX(), 1);
+        assertEquals(direction.getY(), 0);
+    }
+
+    @Test
+    void completedTest() {
+        boolean completed = l1.completed();
+
+        assertFalse(completed);
+    }
+
+    @Test
+    void getSizeTest() {
+        Vector2 size = l1.getSize();
+
+        assertEquals(size.getX(), 100);
+        assertEquals(size.getY(), 100);
+    }
+
+    @Test
+    void getNameTest() {
+        String name = l1.getName();
+
+        assertTrue(name.equals("level X"));
     }
 }
