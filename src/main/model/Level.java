@@ -76,11 +76,7 @@ public class Level {
     // EFFECTS: calls either moveForward or moveBackward on every projectile based
     // on given timeScale
     public void moveAllProjectiles(int timeScale) {
-        Iterator<Projectile> iterator = projectileList.iterator();
-
-        while (iterator.hasNext()) {
-            Projectile projectile = iterator.next();
-
+        for (Projectile projectile : projectileList) {
             if (timeScale == 1) {
                 projectile.moveForward();
             } else {
@@ -160,10 +156,7 @@ public class Level {
     // MODIFIES: this
     // EFFECTS: resets the Level
     public void reset() {
-        Iterator<Projectile> iterator = projectileList.iterator();
-
-        while (iterator.hasNext()) {
-            Projectile projectile = iterator.next();
+        for (Projectile projectile : projectileList) {
             projectile.reset();
         }
 
