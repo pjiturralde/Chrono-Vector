@@ -15,7 +15,7 @@ public class ProjectileTest {
     void runBefore() {
         p1 = new Projectile(0, 0, 1, 1, 1);
         p2 = new Projectile(1, 2, 1, 0, 1);
-        p3 = new Projectile(0, 0, 1, 1, 1, true);
+        p3 = new Projectile(0, 0, 1, 1, 2, true);
         p4 = new Projectile(0, 0, 1, 0, 100);
     }
 
@@ -35,6 +35,38 @@ public class ProjectileTest {
 
         int pointX = p1.getPosition().getX();
         int pointY = p1.getPosition().getY();
+
+        assertEquals(pointX, 1);
+        assertEquals(pointY, 1);
+
+        p1.moveForward();
+
+        pointX = p1.getPosition().getX();
+        pointY = p1.getPosition().getY();
+
+        assertEquals(pointX, 0);
+        assertEquals(pointY, 0);
+
+        p3.moveForward();
+
+        pointX = p3.getPosition().getX();
+        pointY = p3.getPosition().getY();
+
+        assertEquals(pointX, 1);
+        assertEquals(pointY, 1);
+
+        p3.moveForward();
+
+        pointX = p3.getPosition().getX();
+        pointY = p3.getPosition().getY();
+
+        assertEquals(pointX, 2);
+        assertEquals(pointY, 2);
+
+        p3.moveForward();
+
+        pointX = p3.getPosition().getX();
+        pointY = p3.getPosition().getY();
 
         assertEquals(pointX, 1);
         assertEquals(pointY, 1);

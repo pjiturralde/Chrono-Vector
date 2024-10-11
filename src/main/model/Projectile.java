@@ -1,6 +1,7 @@
 package model;
 
-// A class representing a projectile with a position, direction, default speed, and speed
+// A class representing a projectile with a position, startPosition, endPosition, 
+// directionVector, startDirection, and isBouncy bool
 public class Projectile {
     private Vector2 position;
     private Vector2 startPosition;
@@ -89,6 +90,6 @@ public class Projectile {
     // MODIFIES: this
     // EFFECTS: returns if Projectile is past end or start position
     private boolean isPastEndOrStart() {
-        return (position.isMoreThan(endPosition) && position.isMoreThan(startPosition)) || (position.isLessThan(endPosition) && position.isLessThan(startPosition));
+        return (position.moreThan(endPosition) && position.moreThan(startPosition)) || (position.lessThan(endPosition) && position.lessThan(startPosition));
     }
 }
