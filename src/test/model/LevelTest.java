@@ -24,12 +24,12 @@ public class LevelTest {
         l1.addProjectile(p2);
 
         ArrayList<Projectile> projectileList = l1.getProjectiles();
-        assertEquals(projectileList.getFirst(), p1);
-        assertEquals(projectileList.getLast(), p2);
+        assertEquals(projectileList.get(0), p1);
+        assertEquals(projectileList.get(1), p2);
 
         l1.addProjectile(5, 8, 1, 0, 3, false);
 
-        Projectile px = l1.getProjectiles().getLast();
+        Projectile px = l1.getProjectiles().get(2);
         assertEquals(px.getPosition().getX(), 5);
         assertEquals(px.getPosition().getY(), 8);
         assertEquals(px.getDirection().getX(), 1);
@@ -45,8 +45,8 @@ public class LevelTest {
         l1.addWall(w2);
 
         ArrayList<Wall> wallList = l1.getWalls();
-        assertEquals(wallList.getFirst(), w1);
-        assertEquals(wallList.getLast(), w2); 
+        assertEquals(wallList.get(0), w1);
+        assertEquals(wallList.get(1), w2); 
     }
 
     @Test
@@ -61,21 +61,22 @@ public class LevelTest {
 
         l1.checkPlayerMovement(1, 0);
         
-        assertEquals(projectileList.getFirst().getPosition().getX(), 1);
-        assertEquals(projectileList.getFirst().getPosition().getY(), 0);
+        assertEquals(projectileList.get(0).getPosition().getX(), 1);
+        assertEquals(projectileList.get(0).getPosition().getY(), 0);
 
-        assertEquals(projectileList.getLast().getPosition().getX(), 3);
-        assertEquals(projectileList.getLast().getPosition().getY(), 4);
+        assertEquals(projectileList.get(1).getPosition().getX(), 3);
+        assertEquals(projectileList.get(1).getPosition().getY(), 4);
 
         l1.checkPlayerMovement(-1, 0);
 
-        assertEquals(projectileList.getFirst().getPosition().getX(), 0);
-        assertEquals(projectileList.getFirst().getPosition().getY(), 0);
+        assertEquals(projectileList.get(0).getPosition().getX(), 0);
+        assertEquals(projectileList.get(0).getPosition().getY(), 0);
 
-        assertEquals(projectileList.getLast().getPosition().getX(), 2);
-        assertEquals(projectileList.getLast().getPosition().getY(), 3);
+        assertEquals(projectileList.get(1).getPosition().getX(), 2);
+        assertEquals(projectileList.get(1).getPosition().getY(), 3);
     }
 
+    @SuppressWarnings("methodlength")
     @Test
     void checkCollisionTest() {
         Player player = new Player(1, 1);
@@ -116,7 +117,6 @@ public class LevelTest {
         l1.checkCollision(player3, -1, 0);
 
         position = projectile2.getPosition();
-        Vector2 playerPos = player3.getPosition();
 
         assertEquals(position.getX(), 8);
         assertEquals(position.getY(), 8);
@@ -132,8 +132,8 @@ public class LevelTest {
 
         ArrayList<Projectile> projectileList = l1.getProjectiles();
 
-        assertEquals(projectileList.getFirst(), p1);
-        assertEquals(projectileList.getLast(), p2);
+        assertEquals(projectileList.get(0), p1);
+        assertEquals(projectileList.get(1), p2);
     }
 
     @Test
@@ -145,8 +145,8 @@ public class LevelTest {
         l1.addWall(w2);
 
         ArrayList<Wall> wallList = l1.getWalls();
-        assertEquals(wallList.getFirst(), w1);
-        assertEquals(wallList.getLast(), w2); 
+        assertEquals(wallList.get(0), w1);
+        assertEquals(wallList.get(1), w2); 
     }
 
     @Test

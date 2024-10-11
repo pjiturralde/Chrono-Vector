@@ -11,8 +11,8 @@ public class Projectile {
     private boolean isBouncy;
 
     // REQUIRES: dirX and dirY can't be zero at the same time and
-    //           either dirX or dirY has to be 0 or both need to have the same magnitude
-    //           range > 0
+    // either dirX or dirY has to be 0 or both need to have the same magnitude
+    // range > 0
     // EFFECTS: constructs a Projectile object and calculates the endPosition
     public Projectile(int startPosX, int startPosY, int dirX, int dirY, int range, boolean isBouncy) {
         this.position = new Vector2(startPosX, startPosY);
@@ -24,9 +24,10 @@ public class Projectile {
     }
 
     // REQUIRES: dirX and dirY can't be zero at the same time and
-    //           either dirX or dirY has to be 0 or both need to have the same magnitude
-    //           range > 0
-    // EFFECTS: constructs a Projectile object, calculates the endPosition and sets isBouncy to false
+    // either dirX or dirY has to be 0 or both need to have the same magnitude
+    // range > 0
+    // EFFECTS: constructs a Projectile object, calculates the endPosition and sets
+    // isBouncy to false
     public Projectile(int startPosX, int startPosY, int dirX, int dirY, int range) {
         this(startPosX, startPosY, dirX, dirY, range, false);
     }
@@ -40,8 +41,8 @@ public class Projectile {
 
     // MODIFIES: this
     // EFFECTS: moves Projectile forwards depending on direction and speed
-    //          if isBouncy then Projectile will bounce when it goes past its endpoint and
-    //          if not isBouncy then it will return to its start position
+    // if isBouncy then Projectile will bounce when it goes past its endpoint and
+    // if not isBouncy then it will return to its start position
     public void moveForward() {
         position.add(directionVector);
         if (isPastEndOrStart()) {
@@ -51,13 +52,13 @@ public class Projectile {
             } else {
                 position.setVector(startPosition);
             }
-        };
+        }
     }
 
     // MODIFIES: this
     // EFFECTS: moves Projectile backwards depending on direction and speed
-    //          if isBouncy then Projectile will bounce when it goes past its startpoint and
-    //          if not isBouncy then it will return to its end position
+    // if isBouncy then Projectile will bounce when it goes past its startpoint and
+    // if not isBouncy then it will return to its end position
     public void moveBackward() {
         position.subtract(directionVector);
         if (isPastEndOrStart()) {
@@ -67,7 +68,7 @@ public class Projectile {
             } else {
                 position.setVector(endPosition);
             }
-        };
+        }
     }
 
     // MODIFIES: this
@@ -90,6 +91,7 @@ public class Projectile {
     // MODIFIES: this
     // EFFECTS: returns if Projectile is past end or start position
     private boolean isPastEndOrStart() {
-        return (position.moreThan(endPosition) && position.moreThan(startPosition)) || (position.lessThan(endPosition) && position.lessThan(startPosition));
+        return (position.moreThan(endPosition) && position.moreThan(startPosition))
+                || (position.lessThan(endPosition) && position.lessThan(startPosition));
     }
 }

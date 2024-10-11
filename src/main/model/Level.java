@@ -17,10 +17,12 @@ public class Level {
     private Vector2 goalPosition;
 
     // REQUIRES: either timeDirX or timeDirY has to be 0 and
-    //           Vector2(timeDirX, timeDirY) needs to have a magnitude of exactly 1
-    //           eg. (0,1), (1,0), (-1, 0), ...
-    // EFFECTS: constructs a Level object with an empty projectileList and empty wallList
-    public Level(String name, int startPosX, int startPosY, int goalPosX, int goalPosY, int sizeX, int sizeY, int timeDirX, int timeDirY) {
+    // Vector2(timeDirX, timeDirY) needs to have a magnitude of exactly 1
+    // eg. (0,1), (1,0), (-1, 0), ...
+    // EFFECTS: constructs a Level object with an empty projectileList and empty
+    // wallList
+    public Level(String name, int startPosX, int startPosY, int goalPosX,
+            int goalPosY, int sizeX, int sizeY, int timeDirX, int timeDirY) {
         this.name = name;
         this.startPosition = new Vector2(startPosX, startPosY);
         this.goalPosition = new Vector2(goalPosX, goalPosY);
@@ -55,8 +57,8 @@ public class Level {
     }
 
     // REQUIRES: either moveDirX or moveDirY has to be 0 and
-    //           Vector2(timeDirX, timeDirY) needs to have a magnitude of exactly 1
-    //           eg. (0,1), (1,0), (-1, 0), ...
+    // Vector2(timeDirX, timeDirY) needs to have a magnitude of exactly 1
+    // eg. (0,1), (1,0), (-1, 0), ...
     // EFFECTS: checks if player moves in the same direction as timeDirection
     public void checkPlayerMovement(int moveDirX, int moveDirY) {
         Vector2 playerMovementDir = new Vector2(moveDirX, moveDirY);
@@ -71,7 +73,8 @@ public class Level {
 
     // REQUIRES: timeScale must be either 1, or -1
     // MODIFIES: this
-    // EFFECTS: calls either moveForward or moveBackward on every projectile based on given timeScale
+    // EFFECTS: calls either moveForward or moveBackward on every projectile based
+    // on given timeScale
     public void moveAllProjectiles(int timeScale) {
         Iterator<Projectile> iterator = projectileList.iterator();
 
@@ -82,12 +85,13 @@ public class Level {
                 projectile.moveForward();
             } else {
                 projectile.moveBackward();
-            }   
+            }
         }
     }
 
-    // REQUIRES: moveDirX and moveDirY can't both be zero and as a vector has to take the form
-    //           (0, 1), (1, 0), (0, -1), or (-1, 0)
+    // REQUIRES: moveDirX and moveDirY can't both be zero and as a vector has to
+    // take the form
+    // (0, 1), (1, 0), (0, -1), or (-1, 0)
     // MODIFIES: Player p, this
     // EFFECTS: checks if given player collided with anything in the Level
     public void checkCollision(Player p, int moveDirX, int moveDirY) {
@@ -99,25 +103,27 @@ public class Level {
         }
     }
 
-    // REQUIRES: moveDirX and moveDirY can't both be zero and as a vector has to take the form
-    //           (0, 1), (1, 0), (0, -1), or (-1, 0)
+    // REQUIRES: moveDirX and moveDirY can't both be zero and as a vector has to
+    // take the form
+    // (0, 1), (1, 0), (0, -1), or (-1, 0)
     // MODIFIES: Player p, this
-    // EFFECTS: if player collides with wall move him back once and move projectiles back
+    // EFFECTS: if player collides with wall move him back once and move projectiles
+    // back
     private void checkWallCollision(Player p, int moveDirX, int moveDirY) {
         Iterator<Wall> iterator = wallList.iterator();
         boolean hasHitWall = false;
 
         while (iterator.hasNext() && !hasHitWall) {
             Wall wall = iterator.next();
-            Vector2 wallStartPoint = wall.getStartPoint();  
+            Vector2 wallStartPoint = wall.getStartPoint();
             Vector2 wallEndPoint = wall.getEndPoint();
 
-            if ((p.getPosition().lessThanEqualTo(wallStartPoint) && 
-                p.getPosition().moreThanEqualTo(wallEndPoint)) || 
-                (p.getPosition().lessThanEqualTo(wallEndPoint) && 
-                p.getPosition().moreThanEqualTo(wallStartPoint))) {
+            if ((p.getPosition().lessThanEqualTo(wallStartPoint)
+                    && p.getPosition().moreThanEqualTo(wallEndPoint))
+                    || (p.getPosition().lessThanEqualTo(wallEndPoint)
+                            && p.getPosition().moreThanEqualTo(wallStartPoint))) {
                 p.move(-moveDirX, -moveDirY);
-                
+
                 Vector2 playerMovementDir = new Vector2(moveDirX, moveDirY);
 
                 if (playerMovementDir.equals(timeDirection)) {
@@ -131,8 +137,9 @@ public class Level {
         }
     }
 
-    // REQUIRES: moveDirX and moveDirY can't both be zero and as a vector has to take the form
-    //           (0, 1), (1, 0), (0, -1), or (-1, 0)
+    // REQUIRES: moveDirX and moveDirY can't both be zero and as a vector has to
+    // take the form
+    // (0, 1), (1, 0), (0, -1), or (-1, 0)
     // MODIFIES: Player p, this
     // EFFECTS: if player collides with projectile sets levelLost to true
     private void checkProjectileCollision(Player p, int moveDirX, int moveDirY) {
@@ -172,7 +179,7 @@ public class Level {
     }
 
     // EFFECTS: returns Level's list of Walls
-    public ArrayList<Wall>  getWalls() {
+    public ArrayList<Wall> getWalls() {
         return wallList;
     }
 

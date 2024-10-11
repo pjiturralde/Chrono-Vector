@@ -1,4 +1,5 @@
 package model;
+
 import java.util.LinkedList;
 
 // A class representing a Player object with a position and completedLevels list
@@ -17,7 +18,8 @@ public class Player {
         this(0, 0);
     }
 
-    // REQUIRES: (dirX, dirY) must be normalized eg. (1,0), (0,1), (-1, 0), or (0,-1)
+    // REQUIRES: (dirX, dirY) must be normalized eg. (1,0), (0,1), (-1, 0), or
+    // (0,-1)
     // MODIFIES: this
     // EFFECTS: moves player one cell in the given direction
     public void move(int dirX, int dirY) {

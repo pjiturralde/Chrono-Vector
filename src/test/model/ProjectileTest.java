@@ -29,6 +29,7 @@ public class ProjectileTest {
         assertEquals(pointY, 2);
     }
 
+    @SuppressWarnings("methodlength")
     @Test
     void moveForwardTest() {
         p1.moveForward();
