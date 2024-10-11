@@ -2,6 +2,8 @@ package model;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.LinkedList;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,6 +15,13 @@ public class PlayerTest {
     void runBefore() {
         p1 = new Player(0, 0);
         p2 = new Player(1, 3);
+    }
+
+    @Test
+    void constructorNoArgsTest() {
+        Player player = new Player();
+        assertEquals(player.getPosition().getX(), 0);
+        assertEquals(player.getPosition().getY(), 0);
     }
 
     @Test
@@ -57,5 +66,53 @@ public class PlayerTest {
 
         assertEquals(pointX, 1);
         assertEquals(pointY, 3);
+    }
+
+    @Test
+    void setPositionTest() {
+        Vector2 position = new Vector2(5, 7);
+        p2.setPosition(position);
+
+        assertEquals(position.getX(), 5);
+        assertEquals(position.getY(), 7);
+    }
+
+    @Test
+    void getCompletedLevelsTest() {
+        Level l1 = new Level("Level S", 1, 5, 8, 8, 100, 100, 0, 2);
+        Level l2 = new Level("Level H", 1, 5, 8, 8, 100, 100, 0, 2);
+
+        p2.addCompletedLevel(l1);
+        p2.addCompletedLevel(l2);
+
+        LinkedList<Level> levels = p2.getCompletedLevels();
+
+        assertEquals(levels.getFirst(), l1);
+        assertEquals(levels.getLast(), l2);
+    }
+
+    @Test
+    void addCompletedLevelTest() {
+        Level l1 = new Level("Level M", 1, 13, 2, 8, 101, 100, 0, 2);
+        Level l2 = new Level("Level SH", 1, 5, 8, 3, 100, 100, 0, 2);
+
+        p2.addCompletedLevel(l1);
+        p2.addCompletedLevel(l2);
+
+        LinkedList<Level> levels = p2.getCompletedLevels();
+
+        assertEquals(levels.getFirst(), l1);
+        assertEquals(levels.getLast(), l2);
+    }
+
+    @Test
+    void hasCompletedLevelTest() {
+        Level l1 = new Level("Level M", 1, 13, 2, 8, 101, 100, 0, 2);
+        Level l2 = new Level("Level SH", 1, 5, 8, 3, 100, 100, 0, 2);
+
+        p2.addCompletedLevel(l1);
+        p2.addCompletedLevel(l2);
+
+        assertTrue(p2.hasCompletedLevel(l2));
     }
 }
