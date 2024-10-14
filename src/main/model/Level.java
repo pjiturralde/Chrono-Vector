@@ -3,8 +3,9 @@ package model;
 import java.util.Iterator;
 import java.util.ArrayList;
 
-// A class representing a Level object with name, levelLost and levelComplete bool, 
-// size, timeDirection, projectileList, wallList, startPosition, and goalPosition
+// A class representing a Level object with name, levelLost, levelComplete, 
+// size, timeDirection, projectileList, wallList, startPosition, movesTaken, timeStarted,
+// timeTaken, leastMovesTaken, and leastTimeTaken components
 public class Level {
     private String name;
     private boolean levelLost;
@@ -15,6 +16,12 @@ public class Level {
     private ArrayList<Wall> wallList;
     private Vector2 startPosition;
     private Vector2 goalPosition;
+    private int movesTaken;
+    private long timeStarted;
+    private double timeTaken;
+
+    private int leastMovesTaken;
+    private double leastTimeTaken;
 
     // REQUIRES: either timeDirX or timeDirY has to be 0 and
     // Vector2(timeDirX, timeDirY) needs to have a magnitude of exactly 1
@@ -32,6 +39,11 @@ public class Level {
         this.wallList = new ArrayList<Wall>();
         this.levelLost = false;
         this.levelComplete = false;
+        this.movesTaken = 0;
+        this.timeStarted = 0;
+        this.timeTaken = 0;
+        this.leastMovesTaken = -1;
+        this.leastTimeTaken = -1;
     }
 
     // REQUIRES: position of Projectile must be in bounds of the Level size
@@ -104,7 +116,7 @@ public class Level {
     // (0, 1), (1, 0), (0, -1), or (-1, 0)
     // MODIFIES: Player p, this
     // EFFECTS: if player collides with wall move him back once and move projectiles
-    // back
+    // back and decrement movesTaken
     private void checkWallCollision(Player p, int moveDirX, int moveDirY) {
         Iterator<Wall> iterator = wallList.iterator();
         boolean hasHitWall = false;
@@ -128,6 +140,7 @@ public class Level {
                     moveAllProjectiles(1);
                 }
 
+                movesTaken--;
                 hasHitWall = true;
             }
         }
@@ -164,6 +177,51 @@ public class Level {
         levelComplete = false;
 
         levelLost = false;
+
+        movesTaken = 0;
+        timeStarted = 0;
+        timeTaken = 0;
+    }
+
+    // REQUIRES: endTimer() must be called before
+    // EFFECTS: updates the high score
+    public void updateHighScore() {
+        if (movesTaken < leastMovesTaken || leastMovesTaken < 0) {
+            leastMovesTaken = movesTaken;
+        }
+        if (timeTaken < leastTimeTaken || leastTimeTaken < 0) {
+            leastTimeTaken = timeTaken;
+        }
+    }
+
+    // EFFECTS: increases movesTaken by 1
+    public void updateMovesTaken() {
+        movesTaken++;
+    }
+
+    // EFFECTS: starts stopwatch via timeStarted
+    public void startTime() {
+        timeStarted = System.nanoTime();
+    }
+
+    // EFFECTS: ends stopwatch and sets it to timeTaken
+    public void endTime() {
+        timeTaken = (double) (System.nanoTime() - timeStarted) / 1000000000;
+    }
+
+    // EFFECTS: returns number of moves taken in Level
+    public int getMovesTaken() {
+        return movesTaken;
+    }
+
+    // EFFECTS: returns leastTimeTaken rounded to 2 decimal places
+    public double getLeastTimeTaken() {
+        return (double) Math.round(leastTimeTaken * 100) / 100;
+    }
+
+    // EFFECTS: returns leastMovesTaken
+    public int getLeastMovesTaken() {
+        return leastMovesTaken;
     }
 
     // EFFECTS: returns Level's list of Projectiles
@@ -195,7 +253,7 @@ public class Level {
     public boolean lost() {
         return levelLost;
     }
-
+    // EFFECTS: returns if the Level has been completed
     public boolean completed() {
         return levelComplete;
     }
