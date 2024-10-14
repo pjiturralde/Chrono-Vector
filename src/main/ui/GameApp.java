@@ -94,7 +94,10 @@ public class GameApp {
     private void displayCompletedLevels() {
         if (player.getCompletedLevels().size() > 0) {
             for (Level level : player.getCompletedLevels()) {
-                System.out.println(level.getName());
+                System.out.println(level.getName() + ":");
+                System.out.println("Least moves taken: " + level.getLeastMovesTaken() + " moves");
+                System.out.println("Least time taken: " + level.getLeastTimeTaken() + " seconds\n");
+
             }
         } else {
             System.out.println("You have no completed levels");
@@ -128,6 +131,17 @@ public class GameApp {
         currentLevel.checkPlayerMovement(x, y);
         currentLevel.checkCollision(player, x, y);
 
+        if (currentLevel.getMovesTaken() == 1) {
+            currentLevel.startTime();
+        }
+
+        checkLostOrWon();
+    }
+
+    // MODIFIES: this
+    // EFFECTS: checks if level has been lost or won
+    //          and proceeds accordingly
+    private void checkLostOrWon() {
         if (currentLevel.lost()) {
             inGame = false;
 
@@ -137,6 +151,9 @@ public class GameApp {
             currentLevel.reset();
             currentLevel = null;
         } else if (currentLevel.completed()) {
+            currentLevel.endTime();
+            currentLevel.updateHighScore();
+
             inGame = false;
             if (!player.hasCompletedLevel(currentLevel)) {
                 player.addCompletedLevel(currentLevel);
