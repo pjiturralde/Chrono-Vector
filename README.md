@@ -20,3 +20,5 @@ To me this is a good opportunity to both create a puzzle I find interesting and 
 - As a user, I want to be able to view my completed levels.
 - As a user, I want to be able to move my player in four directions.
 - As a user, I want to be able to select a level to play.
+- As a user, I want to be given the option to save my completed levels data
+- As a user, I want to be given the option to load my completed levels data
