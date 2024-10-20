@@ -11,6 +11,7 @@ import model.Projectile;
 import model.Vector2;
 import model.Wall;
 import model.Player;
+import model.LevelStats;
 
 // Game application
 public class GameApp {
@@ -92,11 +93,11 @@ public class GameApp {
 
     // EFFECTS: displays completed levels
     private void displayCompletedLevels() {
-        if (player.getCompletedLevels().size() > 0) {
-            for (Level level : player.getCompletedLevels()) {
-                System.out.println(level.getName() + ":");
-                System.out.println("Least moves taken: " + level.getLeastMovesTaken() + " moves");
-                System.out.println("Least time taken: " + level.getLeastTimeTaken() + " seconds\n");
+        if (player.getCompletedLevelStats().size() > 0) {
+            for (LevelStats stats : player.getCompletedLevelStats()) {
+                System.out.println(stats.getName() + ":");
+                System.out.println("Least moves taken: " + stats.getLeastMovesTaken() + " moves");
+                System.out.println("Least time taken: " + stats.getLeastTimeTaken() + " seconds\n");
 
             }
         } else {
@@ -128,6 +129,7 @@ public class GameApp {
     // EFFECTS: moves player and updates level accordingly
     private void movePlayer(int x, int y) {
         player.move(x, y);
+        currentLevel.updateMovesTaken();
         currentLevel.checkPlayerMovement(x, y);
         currentLevel.checkCollision(player, x, y);
 
@@ -152,12 +154,15 @@ public class GameApp {
             currentLevel = null;
         } else if (currentLevel.completed()) {
             currentLevel.endTime();
-            currentLevel.updateHighScore();
+            if (player.hasCompletedLevel(currentLevel)) {
+                player.updateCompletedLevelStats(currentLevel);
+            } else {
+                player.addCompletedLevelStats(currentLevel);
+                System.out.println(currentLevel.getMovesTaken());
+                System.out.println(currentLevel.getTimeTaken());
+            }
 
             inGame = false;
-            if (!player.hasCompletedLevel(currentLevel)) {
-                player.addCompletedLevel(currentLevel);
-            }
 
             displayCurrentAsciiMap();
             System.out.println("Gratz you completed the level!");
