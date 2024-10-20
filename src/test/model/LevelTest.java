@@ -275,47 +275,6 @@ public class LevelTest {
     }
 
     @Test
-    public void updateHighScoreTest() {
-        l1.updateMovesTaken();
-        l1.updateMovesTaken();
-        l1.updateMovesTaken();
-
-        l1.startTime();
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            System.err.println("something interrupted");
-        } 
-
-        l1.endTime();
-
-        l1.updateHighScore();
-
-        double leastTimeTaken = l1.getLeastTimeTaken();
-        int leastMovesTaken = l1.getLeastMovesTaken();
-        boolean exceeds = leastTimeTaken >= 1;
-
-        assertTrue(exceeds);
-        assertEquals(leastMovesTaken, 3);
-        
-        l1.reset();
-
-        l1.updateMovesTaken();
-
-        l1.startTime();
-        l1.endTime();
-
-        l1.updateHighScore();
-
-        leastTimeTaken = l1.getLeastTimeTaken();
-        leastMovesTaken = l1.getLeastMovesTaken();
-
-        assertEquals(leastTimeTaken, 0);
-        assertEquals(leastMovesTaken, 1);
-    }
-
-    @Test
     public void getMovesTakenTest() {
         l1.updateMovesTaken();
 

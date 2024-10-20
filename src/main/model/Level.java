@@ -1,6 +1,7 @@
 package model;
 
 import java.util.Iterator;
+
 import java.util.ArrayList;
 
 // A class representing a Level object with name, levelLost, levelComplete, 
@@ -19,9 +20,6 @@ public class Level {
     private int movesTaken;
     private long timeStarted;
     private double timeTaken;
-
-    private int leastMovesTaken;
-    private double leastTimeTaken;
 
     // REQUIRES: either timeDirX or timeDirY has to be 0 and
     // Vector2(timeDirX, timeDirY) needs to have a magnitude of exactly 1
@@ -42,8 +40,6 @@ public class Level {
         this.movesTaken = 0;
         this.timeStarted = 0;
         this.timeTaken = 0;
-        this.leastMovesTaken = -1;
-        this.leastTimeTaken = -1;
     }
 
     // REQUIRES: position of Projectile must be in bounds of the Level size
@@ -183,17 +179,6 @@ public class Level {
         timeTaken = 0;
     }
 
-    // REQUIRES: endTimer() must be called before
-    // EFFECTS: updates the high score
-    public void updateHighScore() {
-        if (movesTaken < leastMovesTaken || leastMovesTaken < 0) {
-            leastMovesTaken = movesTaken;
-        }
-        if (timeTaken < leastTimeTaken || leastTimeTaken < 0) {
-            leastTimeTaken = timeTaken;
-        }
-    }
-
     // EFFECTS: increases movesTaken by 1
     public void updateMovesTaken() {
         movesTaken++;
@@ -214,14 +199,9 @@ public class Level {
         return movesTaken;
     }
 
-    // EFFECTS: returns leastTimeTaken rounded to 2 decimal places
-    public double getLeastTimeTaken() {
-        return (double) Math.round(leastTimeTaken * 100) / 100;
-    }
-
-    // EFFECTS: returns leastMovesTaken
-    public int getLeastMovesTaken() {
-        return leastMovesTaken;
+    // EFFECTS: returns amount of time taken to complete Level
+    public double getTimeTaken() {
+        return timeTaken;
     }
 
     // EFFECTS: returns Level's list of Projectiles
