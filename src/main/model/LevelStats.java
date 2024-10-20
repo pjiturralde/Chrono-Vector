@@ -1,18 +1,29 @@
 package model;
 
+import org.json.JSONObject;
+
+import persistence.Writable;
+
 // A class representing a LevelStats object with leastMovesTaken, 
 // leastTimeTaken, and levelNum components
-public class LevelStats {
+public class LevelStats implements Writable {
+    private String name;
+    private int leastMovesTaken;
+    private double leastTimeTaken;
 
     // EFFECTS: constructs a LevelStats object
     public LevelStats(String name, int leastMovesTaken, double leastTimeTaken) {
-        // stub
+        this.name = name;
+        this.leastMovesTaken = leastMovesTaken;
+        this.leastTimeTaken = leastTimeTaken;
     }
 
     // EFFECTS: constructs a LevelStats object with
     // negative leastTimeTaken and negative levelNum
     public LevelStats(String name) {
-        // stub
+        this.name = name;
+        this.leastMovesTaken = -1;
+        this.leastTimeTaken = -1;
     }
 
     // REQUIRES: Level name must be the same as LevelStats name
@@ -20,21 +31,35 @@ public class LevelStats {
     // EFFECTS: compares Level movesTaken and timeTaken and updates if
     // either are less than their LevelStats counterpart
     public void update(Level level) {
-        // stub
+        if (level.getMovesTaken() < leastMovesTaken || leastMovesTaken == -1) {
+            leastMovesTaken = level.getMovesTaken();
+        }
+
+        if (level.getTimeTaken() < leastTimeTaken || leastTimeTaken == -1) {
+            leastTimeTaken = level.getTimeTaken();
+        }
+    }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("leastMovesTaken", leastMovesTaken);
+        json.put("leastTimeTaken", leastTimeTaken);
+        return json;
     }
 
     // EFFECTS: returns LevelStats' name
     public String getName() {
-        return null; // stub
+        return name;
     }
 
     // EFFECTS: returns LevelStats' leastMovesTaken
     public int getLeastMovesTaken() {
-        return -1; // stub
+        return leastMovesTaken;
     }
 
     // EFFECTS: returns LevelStats' leastTimeTaken
     public double getLeastTimeTaken() {
-        return -1; // stub
+        return leastTimeTaken;
     }
 }
