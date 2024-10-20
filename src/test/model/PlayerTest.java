@@ -78,31 +78,29 @@ public class PlayerTest {
     }
 
     @Test
-    void getCompletedLevelsTest() {
+    void completedLevelsTest() {
         Level l1 = new Level("Level S", 1, 5, 8, 8, 100, 100, 0, 2);
         Level l2 = new Level("Level H", 1, 5, 8, 8, 100, 100, 0, 2);
 
-        p2.addCompletedLevel(l1);
-        p2.addCompletedLevel(l2);
+        p2.addCompletedLevelStats(l1);
+        p2.addCompletedLevelStats(l2);
 
-        LinkedList<Level> levels = p2.getCompletedLevels();
+        LinkedList<LevelStats> statsList = p2.getCompletedLevelStats();
 
-        assertEquals(levels.getFirst(), l1);
-        assertEquals(levels.getLast(), l2);
-    }
+        assertEquals(statsList.getFirst().getName(), l1.getName());
+        assertEquals(statsList.getFirst().getLeastMovesTaken(), l1.getMovesTaken());
+        assertEquals(statsList.getFirst().getLeastTimeTaken(), l1.getTimeTaken());
+        assertEquals(statsList.getLast().getName(), l2.getName());
+        assertEquals(statsList.getLast().getLeastMovesTaken(), l2.getMovesTaken());
+        assertEquals(statsList.getLast().getLeastTimeTaken(), l2.getTimeTaken());
 
-    @Test
-    void addCompletedLevelTest() {
-        Level l1 = new Level("Level M", 1, 13, 2, 8, 101, 100, 0, 2);
-        Level l2 = new Level("Level SH", 1, 5, 8, 3, 100, 100, 0, 2);
+        LevelStats stats = new LevelStats("level Y", 0, 0);
 
-        p2.addCompletedLevel(l1);
-        p2.addCompletedLevel(l2);
+        p2.addCompletedLevelStats(stats);
 
-        LinkedList<Level> levels = p2.getCompletedLevels();
-
-        assertEquals(levels.getFirst(), l1);
-        assertEquals(levels.getLast(), l2);
+        assertEquals(statsList.getLast().getName(), stats.getName());
+        assertEquals(statsList.getLast().getLeastMovesTaken(), stats.getLeastMovesTaken());
+        assertEquals(statsList.getLast().getLeastTimeTaken(), stats.getLeastTimeTaken());
     }
 
     @Test
@@ -110,9 +108,44 @@ public class PlayerTest {
         Level l1 = new Level("Level M", 1, 13, 2, 8, 101, 100, 0, 2);
         Level l2 = new Level("Level SH", 1, 5, 8, 3, 100, 100, 0, 2);
 
-        p2.addCompletedLevel(l1);
-        p2.addCompletedLevel(l2);
+        p2.addCompletedLevelStats(l1);
+        p2.addCompletedLevelStats(l2);
 
         assertTrue(p2.hasCompletedLevel(l2));
+    }
+
+    @Test
+    void updateCompletedLevelsTest() {
+        Level l1 = new Level("Level S", 1, 5, 8, 8, 100, 100, 0, 2);
+
+        l1.updateMovesTaken();
+        l1.updateMovesTaken();
+
+        l1.startTime();
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            System.err.println("something interrupted");
+        } 
+
+        l1.endTime();
+
+        p2.addCompletedLevelStats(l1);
+
+        LinkedList<LevelStats> stats = p2.getCompletedLevelStats();
+
+        assertEquals(stats.getFirst().getLeastMovesTaken(), 2);
+        boolean exceeds = stats.getFirst().getLeastTimeTaken() >= 1;
+
+        assertTrue(exceeds);
+
+        l1.reset();
+
+        p2.updateCompletedLevelStats(l1);
+
+        assertEquals(stats.getFirst().getName(), l1.getName());
+        assertEquals(stats.getFirst().getLeastMovesTaken(), l1.getMovesTaken());
+        assertEquals(stats.getFirst().getLeastTimeTaken(), l1.getTimeTaken());
     }
 }
