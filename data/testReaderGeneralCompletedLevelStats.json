@@ -1,0 +1,14 @@
+{
+    "completedLevelStats": [
+        {
+            "name" : "level Z",
+            "leastMovesTaken" : 2,
+            "leastTimeTaken" : 3.0
+        },
+        {
+            "name" : "level F",
+            "leastMovesTaken" : 20,
+            "leastTimeTaken" : 6.3
+        }
+    ]
+}
