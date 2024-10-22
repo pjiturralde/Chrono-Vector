@@ -51,12 +51,12 @@ class JsonWriterTest extends JsonTest {
             Player player = new Player();
             player.addCompletedLevelStats(new LevelStats("level S"));
             player.addCompletedLevelStats(new LevelStats("level L", 3, 2.0));
-            JsonWriter writer = new JsonWriter("./data/testWriterGeneralWorkroom.json");
+            JsonWriter writer = new JsonWriter("./data/testWriterGeneralCompletedLevelStats.json");
             writer.open();
             writer.write(player);
             writer.close();
 
-            JsonReader reader = new JsonReader("./data/testWriterGeneralWorkroom.json");
+            JsonReader reader = new JsonReader("./data/testWriterGeneralCompletedLevelStats.json");
             player = reader.read();
             List<LevelStats> statsList = player.getCompletedLevelStats(); 
             assertEquals(2, statsList.size());

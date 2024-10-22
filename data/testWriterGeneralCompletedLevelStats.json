@@ -1,0 +1,12 @@
+{"completedLevelStats": [
+    {
+        "leastTimeTaken": -1,
+        "name": "level S",
+        "leastMovesTaken": -1
+    },
+    {
+        "leastTimeTaken": 2,
+        "name": "level L",
+        "leastMovesTaken": 3
+    }
+]}
