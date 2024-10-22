@@ -85,6 +85,9 @@ public class Player implements Writable {
         return false;
     }
 
+    // Referenced from the JsonSerialization Demo
+    // https://github.students.cs.ubc.ca/CPSC210/JsonSerializationDemo
+
     @Override
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
