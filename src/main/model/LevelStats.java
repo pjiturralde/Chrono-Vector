@@ -43,6 +43,7 @@ public class LevelStats implements Writable {
     @Override
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
+        json.put("name", name);
         json.put("leastMovesTaken", leastMovesTaken);
         json.put("leastTimeTaken", leastTimeTaken);
         return json;
