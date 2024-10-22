@@ -1,6 +1,8 @@
 package ui;
 
 import java.util.LinkedList;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -10,17 +12,22 @@ import model.Level;
 import model.Projectile;
 import model.Vector2;
 import model.Wall;
+import persistence.JsonReader;
+import persistence.JsonWriter;
 import model.Player;
 import model.LevelStats;
 
 // Game application
 public class GameApp {
+    private static final String JSON_STORE = "./data/player.json";
     private LinkedList<Level> levels;
     private Level currentLevel;
     private ArrayList<AsciiObject> currentAsciiMap;
     private Player player;
     private Scanner input;
     private boolean inGame;
+    private JsonWriter jsonWriter;
+    private JsonReader jsonReader;
 
     // EFFECTS: runs the Game application
     public GameApp() {
@@ -86,6 +93,10 @@ public class GameApp {
             }
         } else if (command.equals("k")) {
             displayCompletedLevels();
+        } else if (command.equals("s")) {
+            savePlayer();
+        } else if (command.equals("l")) {
+            loadPlayer();
         } else {
             System.out.println("Selection not valid...");
         }
@@ -188,6 +199,8 @@ public class GameApp {
         System.out.println("\tp -> play");
         System.out.println("\tk -> completed levels");
         System.out.println("\tq -> quit");
+        System.out.println("\ts -> save data");
+        System.out.println("\tl -> load data");
     }
 
     // EFFECTS: displays level options to user
@@ -207,6 +220,8 @@ public class GameApp {
         this.input = new Scanner(System.in);
         this.inGame = false;
         this.player = new Player();
+        this.jsonReader = new JsonReader(JSON_STORE);
+        this.jsonWriter = new JsonWriter(JSON_STORE);
 
         constructAllLevels();
     }
@@ -344,6 +359,34 @@ public class GameApp {
                     currentAsciiMap.add(obj);
                 }
             }
+        }
+    }
+
+    // Referenced from the JsonSerialization Demo
+    // https://github.students.cs.ubc.ca/CPSC210/JsonSerializationDemo
+
+    // EFFECTS: saves the player to file
+    private void savePlayer() {
+        try {
+            jsonWriter.open();
+            jsonWriter.write(player);
+            jsonWriter.close();
+            System.out.println("Saved to " + JSON_STORE);
+        } catch (FileNotFoundException e) {
+            System.out.println("Unable to write to file: " + JSON_STORE);
+        }
+    }
+
+    // Referenced from the JsonSerialization Demo
+    // https://github.students.cs.ubc.ca/CPSC210/JsonSerializationDemo
+
+    // EFFECTS: loads player from file
+    private void loadPlayer() {
+        try {
+            player = jsonReader.read();
+            System.out.println("Loaded from " + JSON_STORE);
+        } catch (IOException e) {
+            System.out.println("Unable to read from file: " + JSON_STORE);
         }
     }
 }
