@@ -24,7 +24,7 @@ public class JsonReaderTest extends JsonTest {
     }
 
     @Test
-    void testReaderEmptyWorkRoom() {
+    void testReaderEmptyCompletedLevelStats() {
         JsonReader reader = new JsonReader("./data/testReaderEmptyCompletedLevelStats.json");
         try {
             Player player = reader.read();
@@ -35,7 +35,7 @@ public class JsonReaderTest extends JsonTest {
     }
 
     @Test
-    void testReaderGeneralWorkRoom() {
+    void testReaderGeneralCompletedLevelStats() {
         JsonReader reader = new JsonReader("./data/testReaderGeneralCompletedLevelStats.json");
         try {
             Player player = reader.read();
