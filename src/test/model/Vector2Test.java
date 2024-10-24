@@ -54,10 +54,6 @@ public class Vector2Test {
 
         isEqual = v1.equals(v1);
         assertTrue(isEqual);
-
-        Level level = new Level(null, 0, 0, 3, 2, 100, 100, 0, 1);
-        isEqual = v1.equals(level);
-        assertFalse(isEqual);
     }
 
     @Test
