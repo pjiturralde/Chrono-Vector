@@ -121,7 +121,11 @@ public class GameApp {
 
                 TreeSet<LevelStats> statsHistory = player.getCompletedLevelStats().get(index);
                 System.out.println("\nLevel " + Integer.toString(index + 1) + ":\n");
+
+                int attemptNum = 0;
                 for (LevelStats stats : statsHistory) {
+                    attemptNum++;
+                    System.out.println("Attempt #" + attemptNum);
                     System.out.println("Least moves taken: " + stats.getLeastMovesTaken() + " moves");
                     System.out.println("Least time taken: " + stats.getLeastTimeTaken() + " seconds\n");
                 }
