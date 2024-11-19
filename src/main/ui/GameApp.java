@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Scanner;
+import java.util.TreeSet;
 
 import model.Level;
 import model.Projectile;
@@ -104,12 +105,28 @@ public class GameApp {
 
     // EFFECTS: displays completed levels
     private void displayCompletedLevels() {
-        if (player.getCompletedLevelStats().size() > 0) {
-            for (LevelStats stats : player.getCompletedLevelStats()) {
-                System.out.println(stats.getName() + ":");
-                System.out.println("Least moves taken: " + stats.getLeastMovesTaken() + " moves");
-                System.out.println("Least time taken: " + stats.getLeastTimeTaken() + " seconds\n");
+        if (player.getCompletedLevelStats().size() > 0) { 
+            System.out.println("\nSelect a completed level to see history");
+            
+            for (int i = 0; i < player.getCompletedLevelStats().size(); i++) {
+                System.out.println((i + 1) + " -> " + levels.get(i).getName());
+            }
 
+            String command = promptUser();
+            char charCommand = command.charAt(0);
+
+            if (command.length() == 1 && Character.isDigit(charCommand) && Character.getNumericValue(charCommand) > 0
+                    && Character.getNumericValue(charCommand) <= player.getCompletedLevelStats().size()) {
+                int index = Character.getNumericValue(charCommand) - 1;
+
+                TreeSet<LevelStats> statsHistory = player.getCompletedLevelStats().get(index);
+                System.out.println("\nLevel " + Integer.toString(index + 1) + ":\n");
+                for (LevelStats stats : statsHistory) {
+                    System.out.println("Least moves taken: " + stats.getLeastMovesTaken() + " moves");
+                    System.out.println("Least time taken: " + stats.getLeastTimeTaken() + " seconds\n");
+                }
+            } else if (!command.equals("q")) {
+                System.out.println("Selection not valid...");
             }
         } else {
             System.out.println("You have no completed levels");
@@ -165,13 +182,7 @@ public class GameApp {
             currentLevel = null;
         } else if (currentLevel.completed()) {
             currentLevel.endTime();
-            if (player.hasCompletedLevel(currentLevel)) {
-                player.updateCompletedLevelStats(currentLevel);
-            } else {
-                player.addCompletedLevelStats(currentLevel);
-                System.out.println(currentLevel.getMovesTaken());
-                System.out.println(currentLevel.getTimeTaken());
-            }
+            player.addCompletedLevelStats(currentLevel);
 
             inGame = false;
 
@@ -235,7 +246,7 @@ public class GameApp {
     // MODIFIES: this
     // EFFECTS: constructs level 1
     private void constructLevel1() {
-        Level level1 = new Level("level 1", 4, 9, 4, 1, 8, 10, 0, -1);
+        Level level1 = new Level("level 1", 1, 4, 9, 4, 1, 8, 10, 0, -1);
         level1.addProjectile(new Projectile(7, 6, -1, 0, 6));
         level1.addProjectile(new Projectile(1, 4, 1, 0, 6));
         level1.addWall(new Wall(0, 1, 0, 9));
