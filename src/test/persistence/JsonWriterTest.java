@@ -1,13 +1,13 @@
 package persistence;
 
-import org.junit.experimental.categories.Category;
 import org.junit.jupiter.api.Test;
 
 import model.LevelStats;
 import model.Player;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.LinkedList;
+import java.util.TreeSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -52,8 +52,8 @@ class JsonWriterTest extends JsonTest {
     void testWriterGeneralCompletedLevelStats() {
         try {
             Player player = new Player();
-            player.addCompletedLevelStats(new LevelStats("level S"));
-            player.addCompletedLevelStats(new LevelStats("level L", 3, 2.0));
+            player.addCompletedLevelStats(new LevelStats("level S"), 0);
+            player.addCompletedLevelStats(new LevelStats("level L", 3, 2.0), 1);
             JsonWriter writer = new JsonWriter("./data/testWriterGeneralCompletedLevelStats.json");
             writer.open();
             writer.write(player);
@@ -61,10 +61,10 @@ class JsonWriterTest extends JsonTest {
 
             JsonReader reader = new JsonReader("./data/testWriterGeneralCompletedLevelStats.json");
             player = reader.read();
-            List<LevelStats> statsList = player.getCompletedLevelStats(); 
+            LinkedList<TreeSet<LevelStats>> statsList = player.getCompletedLevelStats(); 
             assertEquals(2, statsList.size());
-            checkLevelStats("level S", -1, -1, statsList.get(0));
-            checkLevelStats("level L", 3, 2.0, statsList.get(1));
+            checkLevelStats("level S", -1, -1, statsList.get(0).first());
+            checkLevelStats("level L", 3, 2.0, statsList.get(1).first());
         } catch (IOException e) {
             fail("Exception should not have been thrown");
         }
