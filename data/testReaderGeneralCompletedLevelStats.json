@@ -1,5 +1,5 @@
 {
-    "completedLevelStats": [
+    "completedLevelStats": [[
         {
             "name" : "level Z",
             "leastMovesTaken" : 2,
@@ -10,5 +10,5 @@
             "leastMovesTaken" : 20,
             "leastTimeTaken" : 6.3
         }
-    ]
+    ]]
 }

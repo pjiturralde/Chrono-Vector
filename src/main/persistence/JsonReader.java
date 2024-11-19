@@ -52,21 +52,27 @@ public class JsonReader {
     // MODIFIES: player
     // EFFECTS: parses levelstats list from JSON object and adds them to player
     private void addLevelStats(Player player, JSONObject jsonObject) {
-        JSONArray jsonArray = jsonObject.getJSONArray("completedLevelStats");
-        for (Object json : jsonArray) {
-            JSONObject nextLevelStats = (JSONObject) json;
-            addLevelStatsHelper(player, nextLevelStats);
+        JSONArray statsJsonArray = jsonObject.getJSONArray("completedLevelStats");
+        int counter = 0;
+
+        for (Object historyJsonArray : statsJsonArray) {
+            JSONArray statsHistory = (JSONArray) historyJsonArray;
+            for (Object json : statsHistory) {
+                JSONObject nextJsonObject = (JSONObject) json;
+                addLevelStatsHelper(player, nextJsonObject, counter);
+            }
+            counter++;
         }
     }
 
     // MODIFIES: player
     // EFFECTS: parses levelstats from JSON object and adds it to player
-    private void addLevelStatsHelper(Player player, JSONObject jsonObject) {
+    private void addLevelStatsHelper(Player player, JSONObject jsonObject, int levelIndex) {
         String name = jsonObject.getString("name");
         int leastMovesTaken = jsonObject.getInt("leastMovesTaken");
         double leastTimeTaken = jsonObject.getDouble("leastTimeTaken");
         LevelStats stats = new LevelStats(name, leastMovesTaken, leastTimeTaken);
-        player.addCompletedLevelStats(stats);
+        player.addCompletedLevelStats(stats, levelIndex);
     }
 }
 

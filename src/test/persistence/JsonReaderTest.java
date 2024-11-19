@@ -6,7 +6,8 @@ import model.Player;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.LinkedList;
+import java.util.TreeSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -42,10 +43,10 @@ public class JsonReaderTest extends JsonTest {
         JsonReader reader = new JsonReader("./data/testReaderGeneralCompletedLevelStats.json");
         try {
             Player player = reader.read();
-            List<LevelStats> statsList = player.getCompletedLevelStats();
-            assertEquals(2, statsList.size());
-            checkLevelStats("level Z", 2, 3.0, statsList.get(0));
-            checkLevelStats("level F", 20, 6.3, statsList.get(1));
+            LinkedList<TreeSet<LevelStats>> statsList = player.getCompletedLevelStats();
+            assertEquals(2, statsList.get(0).size());
+            checkLevelStats("level Z", 2, 3.0, statsList.get(0).first());
+            checkLevelStats("level F", 20, 6.3, statsList.get(0).last());
         } catch (IOException e) {
             fail("Couldn't read from file");
         }
