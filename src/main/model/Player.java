@@ -6,16 +6,17 @@ import persistence.Writable;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.TreeSet;
 
 // A class representing a Player object with a position and completedLevels list
 public class Player implements Writable {
     private Vector2 position;
-    private LinkedList<LevelStats> completedLevelStats;
+    private LinkedList<TreeSet<LevelStats>> completedLevelStats;
 
     // EFFECTS: constructs a Player object
     public Player(int posX, int posY) {
         this.position = new Vector2(posX, posY);
-        this.completedLevelStats = new LinkedList<LevelStats>();
+        this.completedLevelStats = new LinkedList<TreeSet<LevelStats>>();
     }
 
     // EFFECTS: constructs a Player object
@@ -32,32 +33,29 @@ public class Player implements Writable {
     }
 
     // MODIFIES: this
-    // EFFECTS: updates LevelStats in completedLevelStats with the given Level
-    public void updateCompletedLevelStats(Level level) {
-        boolean foundLevel = false;
-        Iterator<LevelStats> iterator = completedLevelStats.iterator();
+    // EFFECTS: turns given Level into LevelStats and adds to completedLevelStats
+    public void addCompletedLevelStats(Level level) {
+        LevelStats stats = new LevelStats(level.getName(), level.getMovesTaken(), level.getTimeTaken());
 
-        while (iterator.hasNext() && !foundLevel) {
-            LevelStats stats = iterator.next();
-
-            if (stats.getName().equals(level.getName())) {
-                stats.update(level);
-                foundLevel = true;
-            }
+        if (level.getLevelIndex() > completedLevelStats.size() - 1) {
+            TreeSet<LevelStats> statsHistory = new TreeSet<LevelStats>();
+            statsHistory.add(stats);
+            completedLevelStats.add(statsHistory);
+        } else {
+            completedLevelStats.get(level.getLevelIndex()).add(stats);
         }
     }
 
     // MODIFIES: this
-    // EFFECTS: turns given Level into LevelStats and adds to completedLevelStats
-    public void addCompletedLevelStats(Level level) {
-        LevelStats stats = new LevelStats(level.getName(), level.getMovesTaken(), level.getTimeTaken());
-        completedLevelStats.add(stats);
-    }
-
-    // MODIFIES: this
     // EFFECTS: adds given LevelStats to completedLevelStats
-    public void addCompletedLevelStats(LevelStats stats) {
-        completedLevelStats.add(stats);
+    public void addCompletedLevelStats(LevelStats stats, int levelIndex) {
+        if (levelIndex > completedLevelStats.size() - 1) {
+            TreeSet<LevelStats> statsHistory = new TreeSet<LevelStats>();
+            statsHistory.add(stats);
+            completedLevelStats.add(statsHistory);
+        } else {
+            completedLevelStats.get(levelIndex).add(stats);
+        }
     }
 
     // EFFECTS: returns Player's position
@@ -71,17 +69,16 @@ public class Player implements Writable {
     }
 
     // EFFECTS: returns Player's completed Levels
-    public LinkedList<LevelStats> getCompletedLevelStats() {
+    public LinkedList<TreeSet<LevelStats>> getCompletedLevelStats() {
         return completedLevelStats;
     }
 
     // EFFECTS: returns if Player has completed level
     public boolean hasCompletedLevel(Level level) {
-        for (LevelStats stats : completedLevelStats) {
-            if (stats.getName().equals(level.getName())) {
-                return true;
-            }
+        if (level.getLevelIndex() <= completedLevelStats.size() - 1) {
+            return true;
         }
+
         return false;
     }
 
@@ -97,12 +94,16 @@ public class Player implements Writable {
 
     // EFFECTS: returns LevelStats in completedLevelStats as a JSON array
     private JSONArray levelStatsToJson() {
-        JSONArray jsonArray = new JSONArray();
+        JSONArray statsJsonArray = new JSONArray();
 
-        for (LevelStats levelStats : completedLevelStats) {
-            jsonArray.put(levelStats.toJson());
+        for (TreeSet<LevelStats> statsHistory : completedLevelStats) {
+            JSONArray historyJsonArray = new JSONArray();
+            for (LevelStats levelStats : statsHistory) {
+                historyJsonArray.put(levelStats.toJson());
+            }
+            statsJsonArray.put(historyJsonArray);
         }
 
-        return jsonArray;
+        return statsJsonArray;
     }
 }
