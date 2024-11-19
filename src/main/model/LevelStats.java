@@ -6,7 +6,7 @@ import persistence.Writable;
 
 // A class representing a LevelStats object with leastMovesTaken, 
 // leastTimeTaken, and levelNum components
-public class LevelStats implements Writable {
+public class LevelStats implements Writable, Comparable<LevelStats> {
     private String name;
     private int leastMovesTaken;
     private double leastTimeTaken;
@@ -50,6 +50,20 @@ public class LevelStats implements Writable {
         json.put("leastMovesTaken", leastMovesTaken);
         json.put("leastTimeTaken", leastTimeTaken);
         return json;
+    }
+
+    // EFFECTS: compares the position components between this and the other given ASCIIObject
+    @Override
+    public int compareTo(LevelStats other) {
+        int leastMovesComparison = Integer.compare(leastMovesTaken, other.leastMovesTaken);
+
+        if (leastMovesComparison != 0) {
+            return leastMovesComparison;
+        }
+
+        int leastTimeComparison = Double.compare(leastTimeTaken, other.leastTimeTaken);
+
+        return leastTimeComparison;
     }
 
     // EFFECTS: returns LevelStats' name

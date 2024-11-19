@@ -15,7 +15,7 @@ public class LevelStatsTest {
 
     @Test 
     void updateNoneTakenTest() {
-        Level l1 = new Level("level x", 0, 0, 10, 10, 100, 100, 1, 0);
+        Level l1 = new Level("level x", 1, 0, 0, 10, 10, 100, 100, 1, 0);
         levelStats.update(l1);
 
         assertEquals(levelStats.getLeastMovesTaken(), 0);
@@ -25,7 +25,7 @@ public class LevelStatsTest {
 
     @Test
     void updateTest() {
-        Level l1 = new Level("level x", 0, 0, 10, 10, 100, 100, 1, 0);
+        Level l1 = new Level("level x", 1, 0, 0, 10, 10, 100, 100, 1, 0);
 
         l1.updateMovesTaken();
         l1.updateMovesTaken();
