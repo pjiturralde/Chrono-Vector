@@ -12,7 +12,7 @@ public class LevelTest {
 
     @BeforeEach
     void runBefore() {
-        l1 = new Level("level X", 1, 1, 5, 5, 100, 100, 1, 0);
+        l1 = new Level("level X", 1, 1, 1, 5, 5, 100, 100, 1, 0);
     }
 
     @Test

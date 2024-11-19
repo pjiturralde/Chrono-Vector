@@ -9,6 +9,7 @@ import java.util.ArrayList;
 // timeTaken, leastMovesTaken, and leastTimeTaken components
 public class Level {
     private String name;
+    private int levelIndex;
     private boolean levelLost;
     private boolean levelComplete;
     private Vector2 size;
@@ -26,9 +27,10 @@ public class Level {
     // eg. (0,1), (1,0), (-1, 0), ...
     // EFFECTS: constructs a Level object with an empty projectileList and empty
     // wallList
-    public Level(String name, int startPosX, int startPosY, int goalPosX,
+    public Level(String name, int levelNumber, int startPosX, int startPosY, int goalPosX,
             int goalPosY, int sizeX, int sizeY, int timeDirX, int timeDirY) {
         this.name = name;
+        this.levelIndex = levelNumber - 1;
         this.startPosition = new Vector2(startPosX, startPosY);
         this.goalPosition = new Vector2(goalPosX, goalPosY);
         this.timeDirection = new Vector2(timeDirX, timeDirY);
@@ -192,6 +194,11 @@ public class Level {
     // EFFECTS: ends stopwatch and sets it to timeTaken
     public void endTime() {
         timeTaken = (double) (System.nanoTime() - timeStarted) / 1000000000;
+    }
+
+    // EFFECTS: returns Level number
+    public int getLevelIndex() {
+        return levelIndex;
     }
 
     // EFFECTS: returns number of moves taken in Level
