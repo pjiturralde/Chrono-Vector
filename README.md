@@ -16,8 +16,8 @@ To me this is a good opportunity to both create a puzzle I find interesting and 
 
 ## User Stories
 
-- As a user, I want to be able to complete a level and add it to my list of completed levels.
-- As a user, I want to be able to view my completed levels.
+- As a user, I want to be able to complete a level and add its level stats to my completed level history.
+- As a user, I want to be able to view my completed level histories.
 - As a user, I want to be able to move my player in four directions.
 - As a user, I want to be able to select a level to play.
 - As a user, I want to be given the option to save my completed levels data
