@@ -1,12 +1,5 @@
-{"completedLevelStats": [[
-    {
-        "leastTimeTaken": 3.4930086,
-        "name": "level 1",
-        "leastMovesTaken": 10
-    },
-    {
-        "leastTimeTaken": 4.1449795,
-        "name": "level 1",
-        "leastMovesTaken": 10
-    }
-]]}
+{"completedLevelStats": [[{
+    "leastTimeTaken": 1.8759399,
+    "name": "level 1",
+    "leastMovesTaken": 10
+}]]}
