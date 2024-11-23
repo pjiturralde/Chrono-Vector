@@ -11,6 +11,7 @@ import java.util.TreeSet;
 public class Player implements Writable {
     private Vector2 position;
     private LinkedList<TreeSet<LevelStats>> completedLevelStats;
+    
 
     // EFFECTS: constructs a Player object
     public Player(int posX, int posY) {
@@ -33,8 +34,8 @@ public class Player implements Writable {
 
     // MODIFIES: this
     // EFFECTS: turns given Level into LevelStats and adds to completedLevelStats
-    public void addCompletedLevelStats(Level level) {
-        LevelStats stats = new LevelStats(level.getName(), level.getMovesTaken(), level.getTimeTaken());
+    public void addCompletedLevelStats(Level level, int attemptNum) {
+        LevelStats stats = new LevelStats(level.getName(), level.getMovesTaken(), level.getTimeTaken(), attemptNum);
 
         if (level.getLevelIndex() > completedLevelStats.size() - 1) {
             TreeSet<LevelStats> statsHistory = new TreeSet<LevelStats>();
