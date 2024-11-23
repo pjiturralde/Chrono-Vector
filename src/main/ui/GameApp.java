@@ -10,16 +10,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Scanner;
-import java.util.TreeSet;
-import java.util.concurrent.Flow;
 
 import model.Level;
 import model.Projectile;
-import model.Vector2;
 import model.Wall;
 import persistence.JsonReader;
 import persistence.JsonWriter;
@@ -30,6 +23,11 @@ import model.LevelStats;
 public class GameApp extends JFrame implements ActionListener, KeyListener {
     private static final String JSON_STORE = "./data/player.json";
     private static final String GAME_TITLE = "Chrono Vector";
+    private static final int MOVES_AND_TIME_SORT = 0;
+    private static final int ATTEMPT_SORT = 1;
+    private static final int MOVE_SORT = 2;
+    private static final int TIME_SORT = 3;
+
     private LinkedList<Level> levels;
     private Level currentLevel;
     private Player player;
@@ -52,6 +50,7 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
     JLabel inGameMenuLabel;
 
     String previousMenu;
+    int sortBy;
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -118,7 +117,7 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
             currentLevel.reset();
         } else if (currentLevel.completed()) {
             currentLevel.endTime();
-            player.addCompletedLevelStats(currentLevel);
+            player.addCompletedLevelStats(currentLevel, player.getCompletedLevelStats().size() + 1);
 
             inGame = false;
 
@@ -139,6 +138,7 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
         this.player = new Player();
         this.jsonReader = new JsonReader(JSON_STORE);
         this.jsonWriter = new JsonWriter(JSON_STORE);
+        this.sortBy = MOVES_AND_TIME_SORT;
 
         constructAllLevels();
 
@@ -448,11 +448,9 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
                     cardLayout.show(cardPanel, "Level History");
                     previousMenu = "Completed Level Select";
                     String string = "<html>";
-                    int attemptNum = 0;
 
                     for (LevelStats stats : player.getCompletedLevelStats().get(level.getLevelIndex())) {
-                        attemptNum++;
-                        string += "<br>Attempt #" + attemptNum + "<br>Moves taken: " + stats.getLeastMovesTaken()
+                        string += "<br>Attempt #" + stats.getAttemptNum() + "<br>Moves taken: " + stats.getLeastMovesTaken()
                                 + " moves" + "<br>Time taken: " + stats.getLeastTimeTaken() + " seconds<br>";
                     }
                     string += "<html>";
