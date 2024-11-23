@@ -2,11 +2,13 @@
     [{
         "leastTimeTaken": -1,
         "name": "level S",
-        "leastMovesTaken": -1
+        "leastMovesTaken": -1,
+        "attemptNum": 1
     }],
     [{
         "leastTimeTaken": 2,
         "name": "level L",
-        "leastMovesTaken": 3
+        "leastMovesTaken": 3,
+        "attemptNum": 2
     }]
 ]}

@@ -3,12 +3,14 @@
         {
             "name" : "level Z",
             "leastMovesTaken" : 2,
-            "leastTimeTaken" : 3.0
+            "leastTimeTaken" : 3.0,
+            "attemptNum" : 1
         },
         {
             "name" : "level F",
             "leastMovesTaken" : 20,
-            "leastTimeTaken" : 6.3
+            "leastTimeTaken" : 6.3,
+            "attemptNum" : 2
         }
     ]]
 }
