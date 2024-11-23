@@ -71,7 +71,8 @@ public class JsonReader {
         String name = jsonObject.getString("name");
         int leastMovesTaken = jsonObject.getInt("leastMovesTaken");
         double leastTimeTaken = jsonObject.getDouble("leastTimeTaken");
-        LevelStats stats = new LevelStats(name, leastMovesTaken, leastTimeTaken);
+        int attemptNum = jsonObject.getInt("attemptNum");
+        LevelStats stats = new LevelStats(name, leastMovesTaken, leastTimeTaken, attemptNum);
         player.addCompletedLevelStats(stats, levelIndex);
     }
 }
