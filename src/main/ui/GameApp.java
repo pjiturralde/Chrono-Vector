@@ -174,7 +174,13 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
         southPanel.setPreferredSize(new Dimension(300, 140));
         westPanel.setPreferredSize(new Dimension(300, 300));
 
-        // MENUS ---------------
+        menuPanel.setLayout(new BorderLayout());
+
+        menuPanel.add(centerPanel, BorderLayout.CENTER);
+        menuPanel.add(northPanel, BorderLayout.NORTH);
+        menuPanel.add(eastPanel, BorderLayout.EAST);
+        menuPanel.add(southPanel, BorderLayout.SOUTH);
+        menuPanel.add(westPanel, BorderLayout.WEST);
 
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
@@ -191,19 +197,11 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
 
         centerPanel.add(cardPanel);
 
-        // MENUS ---------------
-
-        // BACKBUTTON ----------
-
         backButton = new JButton("Back");
         backButton.setPreferredSize(new Dimension(150, 80));
         backButton.setVisible(false);
         backButton.setEnabled(false);
         backButton.addActionListener(this);
-
-        // BACKBUTTON ----------
-
-        // GAME PANELS!! --------
 
         layeredGamePane = new JLayeredPane();
         layeredGamePane.setPreferredSize(new Dimension(1920, 1080));
@@ -218,17 +216,11 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
 
         layeredGamePane.add(inGameMenuPanel, JLayeredPane.PALETTE_LAYER);
         layeredGamePane.add(gameplayPanel, JLayeredPane.DEFAULT_LAYER);
-        // GAME PANELS!! --------
-
-        // DISPLAY LEVEL STATS!! ------
-
-        // DISPLAY LEVEL STATS!! ------
 
         this.setTitle(GAME_TITLE);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(1920, 1080);
         this.setResizable(false);
-        // this.setLayout(null);
         this.setLayout(new BorderLayout());
         this.addKeyListener(this);
         this.setVisible(true);
@@ -239,14 +231,6 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
 
         southPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 20));
         southPanel.add(backButton);
-
-        menuPanel.setLayout(new BorderLayout());
-
-        menuPanel.add(centerPanel, BorderLayout.CENTER);
-        menuPanel.add(northPanel, BorderLayout.NORTH);
-        menuPanel.add(eastPanel, BorderLayout.EAST);
-        menuPanel.add(southPanel, BorderLayout.SOUTH);
-        menuPanel.add(westPanel, BorderLayout.WEST);
 
         toMainMenu();
     }
@@ -282,11 +266,11 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
         JButton loadButton = new JButton("Load");
         JButton quitButton = new JButton("Quit");
 
-        playButton.setPreferredSize(new Dimension(400, 100));
-        completedLevelsButton.setPreferredSize(new Dimension(400, 100));
-        saveButton.setPreferredSize(new Dimension(400, 100));
-        loadButton.setPreferredSize(new Dimension(400, 100));
-        quitButton.setPreferredSize(new Dimension(400, 100));
+        playButton.setPreferredSize(new Dimension(400, 60));
+        completedLevelsButton.setPreferredSize(new Dimension(400, 60));
+        saveButton.setPreferredSize(new Dimension(400, 60));
+        loadButton.setPreferredSize(new Dimension(400, 60));
+        quitButton.setPreferredSize(new Dimension(400, 60));
 
         playButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -406,7 +390,7 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
 
         for (Level level : levels) {
             JButton button = new JButton("Level " + (level.getLevelIndex() + 1));
-            button.setPreferredSize(new Dimension(300, 500));
+            button.setPreferredSize(new Dimension(300, 300));
             levelButtons[level.getLevelIndex()] = button;
             panel.add(button);
 
@@ -450,7 +434,8 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
                     String string = "<html>";
 
                     for (LevelStats stats : player.getCompletedLevelStats().get(level.getLevelIndex())) {
-                        string += "<br>Attempt #" + stats.getAttemptNum() + "<br>Moves taken: " + stats.getLeastMovesTaken()
+                        string += "<br>Attempt #" + stats.getAttemptNum() + "<br>Moves taken: "
+                                + stats.getLeastMovesTaken()
                                 + " moves" + "<br>Time taken: " + stats.getLeastTimeTaken() + " seconds<br>";
                     }
                     string += "<html>";

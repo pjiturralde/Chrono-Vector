@@ -240,6 +240,7 @@ public class Level {
     public boolean lost() {
         return levelLost;
     }
+    
     // EFFECTS: returns if the Level has been completed
     public boolean completed() {
         return levelComplete;
