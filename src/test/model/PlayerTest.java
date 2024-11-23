@@ -83,8 +83,8 @@ public class PlayerTest {
         Level l1 = new Level("Level S", 1, 1, 5, 8, 8, 100, 100, 0, 2);
         Level l2 = new Level("Level H", 2, 1, 5, 8, 8, 100, 100, 0, 2);
 
-        p2.addCompletedLevelStats(l1);
-        p2.addCompletedLevelStats(l2);
+        p2.addCompletedLevelStats(l1, 1);
+        p2.addCompletedLevelStats(l2, 2);
 
         LinkedList<TreeSet<LevelStats>> statsList = p2.getCompletedLevelStats();
 
@@ -101,7 +101,7 @@ public class PlayerTest {
         assertEquals(level2Stat.getLeastMovesTaken(), l2.getMovesTaken());
         assertEquals(level2Stat.getLeastTimeTaken(), l2.getTimeTaken());
 
-        LevelStats stats = new LevelStats("level Y", 0, 0);
+        LevelStats stats = new LevelStats("level Y", 0, 0, 1);
 
         p2.addCompletedLevelStats(stats, 2);
 
@@ -115,8 +115,8 @@ public class PlayerTest {
         Level l1 = new Level("Level M", 1, 1, 13, 2, 8, 101, 100, 0, 2);
         Level l2 = new Level("Level SH", 1, 1, 5, 8, 3, 100, 100, 0, 2);
 
-        p2.addCompletedLevelStats(l1);
-        p2.addCompletedLevelStats(l2);
+        p2.addCompletedLevelStats(l1, 1);
+        p2.addCompletedLevelStats(l2, 2);
 
         assertTrue(p2.hasCompletedLevel(l2));
     }

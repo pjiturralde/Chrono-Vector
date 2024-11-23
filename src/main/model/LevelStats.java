@@ -10,18 +10,21 @@ public class LevelStats implements Writable, Comparable<LevelStats> {
     private String name;
     private int leastMovesTaken;
     private double leastTimeTaken;
+    private int attemptNum;
 
     // EFFECTS: constructs a LevelStats object
-    public LevelStats(String name, int leastMovesTaken, double leastTimeTaken) {
+    public LevelStats(String name, int leastMovesTaken, double leastTimeTaken, int attemptNum) {
         this.name = name;
+        this.attemptNum = attemptNum;
         this.leastMovesTaken = leastMovesTaken;
         this.leastTimeTaken = leastTimeTaken;
     }
 
     // EFFECTS: constructs a LevelStats object with
     // negative leastTimeTaken and negative levelNum
-    public LevelStats(String name) {
+    public LevelStats(String name, int attemptNum) {
         this.name = name;
+        this.attemptNum = attemptNum;
         this.leastMovesTaken = -1;
         this.leastTimeTaken = -1;
     }
@@ -42,13 +45,13 @@ public class LevelStats implements Writable, Comparable<LevelStats> {
 
     // Referenced from the JsonSerialization Demo
     // https://github.students.cs.ubc.ca/CPSC210/JsonSerializationDemo
-
     @Override
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
         json.put("name", name);
         json.put("leastMovesTaken", leastMovesTaken);
         json.put("leastTimeTaken", leastTimeTaken);
+        json.put("attemptNum", attemptNum);
         return json;
     }
 
@@ -64,6 +67,11 @@ public class LevelStats implements Writable, Comparable<LevelStats> {
         int leastTimeComparison = Double.compare(leastTimeTaken, other.leastTimeTaken);
 
         return leastTimeComparison;
+    }
+
+    // EFFECTS: returns LevelStats' attemptNum
+    public int getAttemptNum() {
+        return attemptNum;
     }
 
     // EFFECTS: returns LevelStats' name

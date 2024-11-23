@@ -22,7 +22,6 @@ class JsonWriterTest extends JsonTest {
     @Test
     void testWriterInvalidFile() {
         try {
-            Player player = new Player();
             JsonWriter writer = new JsonWriter("./data/my\0illegal:fileName.json");
             writer.open();
             fail("IOException was expected");
@@ -52,8 +51,8 @@ class JsonWriterTest extends JsonTest {
     void testWriterGeneralCompletedLevelStats() {
         try {
             Player player = new Player();
-            player.addCompletedLevelStats(new LevelStats("level S"), 0);
-            player.addCompletedLevelStats(new LevelStats("level L", 3, 2.0), 1);
+            player.addCompletedLevelStats(new LevelStats("level S", 1), 0);
+            player.addCompletedLevelStats(new LevelStats("level L", 3, 2.0, 2), 1);
             JsonWriter writer = new JsonWriter("./data/testWriterGeneralCompletedLevelStats.json");
             writer.open();
             writer.write(player);

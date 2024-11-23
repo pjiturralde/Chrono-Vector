@@ -10,7 +10,7 @@ public class LevelStatsTest {
 
     @BeforeEach
     void runBefore() {
-        levelStats = new LevelStats("level x");
+        levelStats = new LevelStats("level x", 1);
     }
 
     @Test 
