@@ -1,5 +1,6 @@
 package ui;
 
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.awt.*;
 import javax.swing.*;
@@ -23,10 +24,9 @@ import model.LevelStats;
 public class GameApp extends JFrame implements ActionListener, KeyListener {
     private static final String JSON_STORE = "./data/player.json";
     private static final String GAME_TITLE = "Chrono Vector";
-    private static final int MOVES_AND_TIME_SORT = 0;
-    private static final int ATTEMPT_SORT = 1;
-    private static final int MOVE_SORT = 2;
-    private static final int TIME_SORT = 3;
+    private static final int MOVES_THEN_TIME_SORT = 0;
+    private static final int TIME_THEN_MOVES_SORT = 1;
+    private static final int ATTEMPT_SORT = 2;
 
     private LinkedList<Level> levels;
     private Level currentLevel;
@@ -38,19 +38,20 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
     private JPanel cardPanel;
     private CardLayout cardLayout;
 
-    JButton[] levelButtons;
-    JButton[] completedLevelButtons;
-    JButton backButton;
-    JLabel levelHistory;
+    private JButton[] levelButtons;
+    private JButton[] completedLevelButtons;
+    private JButton backButton;
+    private JLabel levelHistory;
 
-    GameplayPanel gameplayPanel;
-    JLayeredPane layeredGamePane;
-    JPanel menuPanel;
-    JPanel inGameMenuPanel;
-    JLabel inGameMenuLabel;
+    private GameplayPanel gameplayPanel;
+    private JLayeredPane layeredGamePane;
+    private JPanel mainScreenPanel;
+    private JPanel inGameMenuPanel;
+    private JLabel inGameMenuLabel;
 
-    String previousMenu;
-    int sortBy;
+    private String previousMenu;
+    private Level selectedLevel;
+    private JComboBox sortByBox;
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -117,7 +118,11 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
             currentLevel.reset();
         } else if (currentLevel.completed()) {
             currentLevel.endTime();
-            player.addCompletedLevelStats(currentLevel, player.getCompletedLevelStats().size() + 1);
+            if (player.getCompletedLevelStats().size() > currentLevel.getLevelIndex()) {
+                player.addCompletedLevelStats(currentLevel, player.getCompletedLevelStats().get(currentLevel.getLevelIndex()).size() + 1);
+            } else {
+                player.addCompletedLevelStats(currentLevel, 1);
+            }
 
             inGame = false;
 
@@ -138,24 +143,23 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
         this.player = new Player();
         this.jsonReader = new JsonReader(JSON_STORE);
         this.jsonWriter = new JsonWriter(JSON_STORE);
-        this.sortBy = MOVES_AND_TIME_SORT;
 
         constructAllLevels();
 
         levelButtons = new JButton[levels.size()];
         completedLevelButtons = new JButton[levels.size()];
 
-        ImageIcon originalImage = new ImageIcon("src\\main\\ui\\Game Icon.png");
+        ImageIcon originalIcon = new ImageIcon("src\\resources\\images\\Game Title Icon.png");
 
-        Image resizedImage = originalImage.getImage().getScaledInstance(800, 400, Image.SCALE_SMOOTH);
+        Image resizedImage = originalIcon.getImage().getScaledInstance(500, 400, Image.SCALE_SMOOTH);
 
-        ImageIcon image = new ImageIcon(resizedImage);
+        ImageIcon gameIcon = new ImageIcon(resizedImage);
 
-        JLabel label = new JLabel();
-        label.setIcon(image);
-        label.setHorizontalAlignment(JLabel.CENTER);
+        JLabel titleLabel = new JLabel();
+        titleLabel.setIcon(gameIcon);
+        titleLabel.setHorizontalAlignment(JLabel.CENTER);
 
-        menuPanel = new JPanel();
+        mainScreenPanel = new MainScreenPanel();
         JPanel centerPanel = new JPanel();
         JPanel northPanel = new JPanel();
         JPanel eastPanel = new JPanel();
@@ -169,39 +173,59 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
         westPanel.setBackground(Color.blue);
 
         centerPanel.setPreferredSize(new Dimension(300, 300));
-        northPanel.setPreferredSize(new Dimension(300, 260));
+        northPanel.setPreferredSize(new Dimension(300, 300));
         eastPanel.setPreferredSize(new Dimension(300, 300));
-        southPanel.setPreferredSize(new Dimension(300, 140));
+        southPanel.setPreferredSize(new Dimension(300, 120));
         westPanel.setPreferredSize(new Dimension(300, 300));
 
-        menuPanel.setLayout(new BorderLayout());
+        centerPanel.setBackground(new Color(0, 0, 44));
+        northPanel.setBackground(new Color(0, 0, 44));
+        eastPanel.setBackground(new Color(0, 0, 44));
+        southPanel.setBackground(new Color(0, 0, 44));
+        westPanel.setBackground(new Color(0, 0, 44));
 
-        menuPanel.add(centerPanel, BorderLayout.CENTER);
-        menuPanel.add(northPanel, BorderLayout.NORTH);
-        menuPanel.add(eastPanel, BorderLayout.EAST);
-        menuPanel.add(southPanel, BorderLayout.SOUTH);
-        menuPanel.add(westPanel, BorderLayout.WEST);
+        mainScreenPanel.add(centerPanel, BorderLayout.CENTER);
+        mainScreenPanel.add(northPanel, BorderLayout.NORTH);
+        mainScreenPanel.add(eastPanel, BorderLayout.EAST);
+        mainScreenPanel.add(southPanel, BorderLayout.SOUTH);
+        mainScreenPanel.add(westPanel, BorderLayout.WEST);
 
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
+        cardPanel.setPreferredSize(new Dimension(500, 600));
 
-        JPanel mainMenuPanel = createMainMenu();
-        JScrollPane levelSelectScrollPane = createLevelSelectMenu();
-        JScrollPane completedLevelSelectScrollPane = createCompletedLevelSelectMenu();
-        JScrollPane levelHistoryViewPane = createLevelHistoryView();
+        JPanel frontMenuPanel = createFrontMenu();
+        JPanel levelSelectScrollPane = createLevelSelectMenu();
+        JPanel completedLevelSelectScrollPanel = createCompletedLevelSelectMenu();
+        JPanel levelHistoryViewPanel = createLevelHistoryView();
 
-        cardPanel.add(mainMenuPanel, "Main Menu");
+        cardPanel.add(frontMenuPanel, "Main Menu");
         cardPanel.add(levelSelectScrollPane, "Level Select");
-        cardPanel.add(completedLevelSelectScrollPane, "Completed Level Select");
-        cardPanel.add(levelHistoryViewPane, "Level History");
+        cardPanel.add(completedLevelSelectScrollPanel, "Completed Level Select");
+        cardPanel.add(levelHistoryViewPanel, "Level History");
 
         centerPanel.add(cardPanel);
 
+        ImageIcon originalBackIcon = new ImageIcon("src\\resources\\images\\Button.png");
+
+        Image resizedBackImage = originalBackIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+
+        ImageIcon backIcon = new ImageIcon(resizedBackImage);
+
         backButton = new JButton("Back");
-        backButton.setPreferredSize(new Dimension(150, 80));
+        backButton.setPreferredSize(new Dimension(100, 100));
         backButton.setVisible(false);
         backButton.setEnabled(false);
         backButton.addActionListener(this);
+
+        backButton.setHorizontalTextPosition(JLabel.CENTER);
+        backButton.setVerticalTextPosition(JLabel.CENTER); 
+        backButton.setIcon(backIcon);
+        backButton.setBackground(new Color(0, 0, 44));
+        backButton.setContentAreaFilled(false);
+        backButton.setBorderPainted(false);
+        backButton.setForeground(new Color(230, 230, 230));
+        backButton.setFont(new Font("DialogInput", Font.PLAIN, 15));
 
         layeredGamePane = new JLayeredPane();
         layeredGamePane.setPreferredSize(new Dimension(1920, 1080));
@@ -224,12 +248,11 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
         this.setLayout(new BorderLayout());
         this.addKeyListener(this);
         this.setVisible(true);
-        this.getContentPane().setBackground(new Color(0, 0, 44));
 
         northPanel.setLayout(new BorderLayout());
-        northPanel.add(label);
+        northPanel.add(titleLabel);
 
-        southPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 20));
+        southPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 0));
         southPanel.add(backButton);
 
         toMainMenu();
@@ -238,7 +261,7 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
     // MODIFIES: this
     // EFFECTS: switches content pane to menu
     public void toMainMenu() {
-        this.setContentPane(menuPanel);
+        this.setContentPane(mainScreenPanel);
         revalidate();
         requestFocus();
     }
@@ -252,13 +275,26 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
         requestFocus();
     }
 
-    // MODIFIES: this
-    // EFFECTS: creates main menu panel and returns it
-    public JPanel createMainMenu() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+    public void customizeMenuButton(JButton button, int width, int height) {
+        Image buttonImage = new ImageIcon("src\\resources\\images\\Menu Button.png").getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
 
-        panel.setPreferredSize(new Dimension(700, 600));
+        ImageIcon buttonIcon = new ImageIcon(buttonImage);
+
+        button.setIcon(buttonIcon);
+        button.setHorizontalTextPosition(JLabel.CENTER);
+        button.setContentAreaFilled(false);
+        button.setBorderPainted(false);
+        button.setForeground(new Color(230, 230, 230));
+        button.setFont(new Font("DialogInput", Font.PLAIN, 18));
+    }
+
+    // MODIFIES: this
+    // EFFECTS: creates front menu panel and returns it
+    public JPanel createFrontMenu() {
+        final int BUTTON_WIDTH = 400;
+        final int BUTTON_HEIGHT = 100;
+
+        JPanel panel = new MenuPanel();
 
         JButton playButton = new JButton("Play");
         JButton completedLevelsButton = new JButton("Completed Levels");
@@ -266,11 +302,17 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
         JButton loadButton = new JButton("Load");
         JButton quitButton = new JButton("Quit");
 
-        playButton.setPreferredSize(new Dimension(400, 60));
-        completedLevelsButton.setPreferredSize(new Dimension(400, 60));
-        saveButton.setPreferredSize(new Dimension(400, 60));
-        loadButton.setPreferredSize(new Dimension(400, 60));
-        quitButton.setPreferredSize(new Dimension(400, 60));
+        playButton.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
+        completedLevelsButton.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
+        saveButton.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
+        loadButton.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
+        quitButton.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
+
+        customizeMenuButton(playButton, BUTTON_WIDTH, BUTTON_HEIGHT);
+        customizeMenuButton(completedLevelsButton, BUTTON_WIDTH, BUTTON_HEIGHT);
+        customizeMenuButton(saveButton, BUTTON_WIDTH, BUTTON_HEIGHT);
+        customizeMenuButton(loadButton, BUTTON_WIDTH, BUTTON_HEIGHT);
+        customizeMenuButton(quitButton, BUTTON_WIDTH, BUTTON_HEIGHT);
 
         playButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -384,15 +426,32 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
 
     // MODIFIES: this
     // EFFECTS: creates level select menu scroll pane and returns it
-    public JScrollPane createLevelSelectMenu() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 40));
+    public JPanel createLevelSelectMenu() {
+        JPanel mainPanel = new MenuPanel();
+        mainPanel.setLayout(new FlowLayout(FlowLayout.CENTER,0,0));
+
+        JPanel scrollPanel = new JPanel();
+        scrollPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 40));
+        scrollPanel.setOpaque(false);
 
         for (Level level : levels) {
+            JLayeredPane layeredPane = new JLayeredPane();
+            layeredPane.setPreferredSize(new Dimension(380, 500));
+
+            JPanel displayPanel = new LevelDisplayPanel(level.getName());
+            displayPanel.setBounds(0, 0, 380, 500);
+
             JButton button = new JButton("Level " + (level.getLevelIndex() + 1));
-            button.setPreferredSize(new Dimension(300, 300));
+            button.setOpaque(false);
+            button.setContentAreaFilled(false);
+            button.setBorderPainted(false);
+            button.setBounds(0, 0, 380, 500);
             levelButtons[level.getLevelIndex()] = button;
-            panel.add(button);
+
+            layeredPane.add(displayPanel);
+            layeredPane.add(button);
+
+            scrollPanel.add(layeredPane);
 
             button.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
@@ -404,30 +463,55 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
             });
         }
 
-        JScrollPane scrollPane = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_NEVER,
+        JScrollPane scrollPane = new JScrollPane(scrollPanel, JScrollPane.VERTICAL_SCROLLBAR_NEVER,
                 JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        scrollPane.getHorizontalScrollBar().setUnitIncrement(50);
-        scrollPane.setPreferredSize(new Dimension(700, 600));
+        JScrollBar horizontalBar = scrollPane.getHorizontalScrollBar();
+        horizontalBar.setUI(new CustomScrollBar("src\\resources\\images\\Horizontal Scroll Bar.png"));
+        horizontalBar.setPreferredSize(new Dimension(10,26));
+        horizontalBar.setUnitIncrement(50);
+        scrollPane.setPreferredSize(new Dimension(490, 590));
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+        scrollPane.setBorder(null);
 
-        return scrollPane;
+        mainPanel.add(scrollPane);
+
+        return mainPanel;
     }
 
     // MODIFIES: this
     // EFFECTS: creates completed level select menu scroll pane and returns it
-    public JScrollPane createCompletedLevelSelectMenu() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
-        panel.setPreferredSize(new Dimension(700, 10000));
+    public JPanel createCompletedLevelSelectMenu() {
+        JPanel mainPanel = new MenuPanel();
+        mainPanel.setLayout(new FlowLayout(FlowLayout.CENTER,0,10));
+
+        JPanel scrollPanel = new JPanel();
+        scrollPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        scrollPanel.setOpaque(false);
 
         for (Level level : levels) {
-            JButton button = new JButton("Level " + (level.getLevelIndex() + 1));
-            button.setPreferredSize(new Dimension(100, 100));
-            completedLevelButtons[level.getLevelIndex()] = button;
-            button.setVisible(false);
-            button.setEnabled(false);
-            panel.add(button);
+            JButton levelButton = new JButton("Level " + (level.getLevelIndex() + 1));
+            ImageIcon originalIcon = new ImageIcon("src\\resources\\images\\Level Button.png");
 
-            button.addActionListener(new ActionListener() {
+            Image resizedImage = originalIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+    
+            ImageIcon levelIcon = new ImageIcon(resizedImage);
+            levelButton.setPreferredSize(new Dimension(100, 100));
+            levelButton.setIcon(levelIcon);
+            levelButton.setHorizontalTextPosition(JLabel.CENTER);
+            levelButton.setVerticalTextPosition(JLabel.CENTER); 
+            levelButton.setBackground(new Color(0, 0, 44));
+            levelButton.setContentAreaFilled(false);
+            levelButton.setBorderPainted(false);
+            levelButton.setForeground(new Color(230, 230, 230));
+            levelButton.setFont(new Font("DialogInput", Font.PLAIN, 15));
+            
+            completedLevelButtons[level.getLevelIndex()] = levelButton;
+            levelButton.setVisible(false);
+            levelButton.setEnabled(false);
+            scrollPanel.add(levelButton);
+
+            levelButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     cardLayout.show(cardPanel, "Level History");
                     previousMenu = "Completed Level Select";
@@ -440,35 +524,152 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
                     }
                     string += "<html>";
 
+                    selectedLevel = level;
                     levelHistory.setText(string);
+                    sortByBox.setSelectedIndex(0);
                 }
             });
         }
 
-        JScrollPane scrollPane = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+        JScrollPane scrollPane = new JScrollPane(scrollPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(50);
-        scrollPane.setPreferredSize(new Dimension(700, 600));
+        JScrollBar verticalBar = scrollPane.getVerticalScrollBar();
+        verticalBar.setUI(new CustomScrollBar("src\\resources\\images\\Vertical Scroll Bar.PNG"));
+        verticalBar.setPreferredSize(new Dimension(26,10));
+        verticalBar.setUnitIncrement(50);
+        scrollPane.setPreferredSize(new Dimension(490, 580));
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+        scrollPane.setBorder(null);
 
-        return scrollPane;
+        mainPanel.add(scrollPane);
+
+        return mainPanel;
     }
 
     // MODIFIES: this
     // EFFECTS: creates level history view scroll pane and returns it
-    public JScrollPane createLevelHistoryView() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
-        panel.setPreferredSize(new Dimension(700, 10000));
+    public JPanel createLevelHistoryView() {
+        JPanel mainPanel = new MenuPanel();
+        mainPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        mainPanel.setPreferredSize(new Dimension(500, 600));
+
+        JPanel scrollPanel = new JPanel();
+        scrollPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        scrollPanel.setPreferredSize(new Dimension(500, 10000));
+        scrollPanel.setOpaque(false);
 
         levelHistory = new JLabel();
-        panel.add(levelHistory);
+        levelHistory.setForeground(new Color(230, 230, 230));
+        levelHistory.setFont(new Font("DialogInput", Font.PLAIN, 15));
+        scrollPanel.add(levelHistory);
 
-        JScrollPane scrollPane = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+        JScrollPane scrollPane = new JScrollPane(scrollPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(25);
-        scrollPane.setPreferredSize(new Dimension(700, 600));
+        JScrollBar verticalBar = scrollPane.getVerticalScrollBar();
+        verticalBar.setUI(new CustomScrollBar("src\\resources\\images\\Vertical Scroll Bar.PNG"));
+        verticalBar.setPreferredSize(new Dimension(26,10));
+        verticalBar.setUnitIncrement(25);
+        scrollPane.setPreferredSize(new Dimension(490, 550));
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+        scrollPane.setBorder(null);
 
-        return scrollPane;
+        JCheckBox topAndBottomCheckBox = new JCheckBox();
+        topAndBottomCheckBox.setOpaque(false);
+
+        JLabel topAndBottomLabel = new JLabel("Top and bottom results only:");
+        topAndBottomLabel.setForeground(new Color(230, 230, 230));
+        topAndBottomLabel.setFont(new Font("DialogInput", Font.PLAIN, 13));
+
+        String[] sortOptions = {"Moves then Time", "Time then Moves", "Attempts"};
+        sortByBox = new JComboBox(sortOptions);
+
+        JLabel sortLabel = new JLabel("Sort by:");
+        sortLabel.setForeground(new Color(230, 230, 230));
+        sortLabel.setFont(new Font("DialogInput", Font.PLAIN, 13));
+
+        sortByBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String selected = (String) sortByBox.getSelectedItem();
+                if (selected.equals("Moves then Time")) {
+                    player.sortCompletedlevelStats(selectedLevel.getLevelIndex(), MOVES_THEN_TIME_SORT);
+                } else if (selected.equals("Time then Moves")) {
+                    player.sortCompletedlevelStats(selectedLevel.getLevelIndex(), TIME_THEN_MOVES_SORT);
+                } else if (selected.equals("Attempts")) {
+                    player.sortCompletedlevelStats(selectedLevel.getLevelIndex(), ATTEMPT_SORT);
+                }
+
+                if (topAndBottomCheckBox.isSelected()) {
+                    LevelStats statsTop = player.getCompletedLevelStats().get(selectedLevel.getLevelIndex()).get(0);
+                    LevelStats statsBottom = player.getCompletedLevelStats().get(selectedLevel.getLevelIndex()).get(player.getCompletedLevelStats().get(selectedLevel.getLevelIndex()).size()-1);
+    
+                    String string = "<html><br>Attempt #" + statsTop.getAttemptNum() + "<br>Moves taken: "
+                    + statsTop.getLeastMovesTaken()
+                    + " moves" + "<br>Time taken: " + statsTop.getLeastTimeTaken() + " seconds<br>";
+    
+                    if (statsTop != statsBottom) {
+                        string += "<br>Attempt #" + statsBottom.getAttemptNum() + "<br>Moves taken: "
+                        + statsBottom.getLeastMovesTaken()
+                        + " moves" + "<br>Time taken: " + statsBottom.getLeastTimeTaken() + " seconds<br>";
+                    }
+                    string += "<html>";
+                    levelHistory.setText(string);
+                } else {
+                    String string = "<html>";
+
+                    for (LevelStats stats : player.getCompletedLevelStats().get(selectedLevel.getLevelIndex())) {
+                        string += "<br>Attempt #" + stats.getAttemptNum() + "<br>Moves taken: "
+                                + stats.getLeastMovesTaken()
+                                + " moves" + "<br>Time taken: " + stats.getLeastTimeTaken() + " seconds<br>";
+                    }
+                    string += "<html>";
+    
+                    levelHistory.setText(string);
+                }
+            }
+        });
+        
+        topAndBottomCheckBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (topAndBottomCheckBox.isSelected()) {
+                    LevelStats statsTop = player.getCompletedLevelStats().get(selectedLevel.getLevelIndex()).get(0);
+                    LevelStats statsBottom = player.getCompletedLevelStats().get(selectedLevel.getLevelIndex()).get(player.getCompletedLevelStats().get(selectedLevel.getLevelIndex()).size()-1);
+    
+                    String string = "<html><br>Attempt #" + statsTop.getAttemptNum() + "<br>Moves taken: "
+                    + statsTop.getLeastMovesTaken()
+                    + " moves" + "<br>Time taken: " + statsTop.getLeastTimeTaken() + " seconds<br>";
+    
+                    if (statsTop != statsBottom) {
+                        string += "<br>Attempt #" + statsBottom.getAttemptNum() + "<br>Moves taken: "
+                        + statsBottom.getLeastMovesTaken()
+                        + " moves" + "<br>Time taken: " + statsBottom.getLeastTimeTaken() + " seconds<br>";
+                    }
+                    string += "<html>";
+    
+                    levelHistory.setText(string);
+                } else {
+                    String string = "<html>";
+
+                    for (LevelStats stats : player.getCompletedLevelStats().get(selectedLevel.getLevelIndex())) {
+                        string += "<br>Attempt #" + stats.getAttemptNum() + "<br>Moves taken: "
+                                + stats.getLeastMovesTaken()
+                                + " moves" + "<br>Time taken: " + stats.getLeastTimeTaken() + " seconds<br>";
+                    }
+                    string += "<html>";
+    
+                    levelHistory.setText(string);
+                }
+            }
+        });
+
+        mainPanel.add(topAndBottomLabel);
+        mainPanel.add(topAndBottomCheckBox);
+        mainPanel.add(sortLabel);
+        mainPanel.add(sortByBox);
+        mainPanel.add(scrollPane);
+
+        return mainPanel;
     }
 
     // EFFECTS: handles back button in main menu
@@ -492,6 +693,8 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
     // EFFECTS: constructs all levels
     private void constructAllLevels() {
         constructLevel1();
+        constructLevel2();
+        constructLevel3();
     }
 
     // MODIFIES: this
@@ -510,6 +713,38 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
         level1.addWall(new Wall(3, 10, 5, 10));
 
         levels.add(level1);
+    }
+
+    private void constructLevel2() {
+        Level level2 = new Level("level 2", 2, 4, 9, 4, 1, 8, 10, 0, -1);
+        level2.addProjectile(new Projectile(7, 6, -1, 0, 6));
+        level2.addProjectile(new Projectile(1, 4, 1, 0, 6));
+        level2.addWall(new Wall(0, 1, 0, 9));
+        level2.addWall(new Wall(8, 1, 8, 9));
+        level2.addWall(new Wall(1, 1, 3, 1));
+        level2.addWall(new Wall(5, 1, 7, 1));
+        level2.addWall(new Wall(1, 9, 3, 9));
+        level2.addWall(new Wall(5, 9, 7, 9));
+        level2.addWall(new Wall(3, 0, 5, 0));
+        level2.addWall(new Wall(3, 10, 5, 10));
+
+        levels.add(level2);
+    }
+
+    private void constructLevel3() {
+        Level level3 = new Level("level 3", 3, 4, 9, 4, 1, 8, 10, 0, -1);
+        level3.addProjectile(new Projectile(7, 6, -1, 0, 6));
+        level3.addProjectile(new Projectile(1, 4, 1, 0, 6));
+        level3.addWall(new Wall(0, 1, 0, 9));
+        level3.addWall(new Wall(8, 1, 8, 9));
+        level3.addWall(new Wall(1, 1, 3, 1));
+        level3.addWall(new Wall(5, 1, 7, 1));
+        level3.addWall(new Wall(1, 9, 3, 9));
+        level3.addWall(new Wall(5, 9, 7, 9));
+        level3.addWall(new Wall(3, 0, 5, 0));
+        level3.addWall(new Wall(3, 10, 5, 10));
+
+        levels.add(level3);
     }
 
     // Referenced from the JsonSerialization Demo
