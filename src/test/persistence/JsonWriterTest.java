@@ -6,8 +6,7 @@ import model.LevelStats;
 import model.Player;
 
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.TreeSet;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -60,10 +59,10 @@ class JsonWriterTest extends JsonTest {
 
             JsonReader reader = new JsonReader("./data/testWriterGeneralCompletedLevelStats.json");
             player = reader.read();
-            LinkedList<TreeSet<LevelStats>> statsList = player.getCompletedLevelStats(); 
+            List<List<LevelStats>> statsList = player.getCompletedLevelStats(); 
             assertEquals(2, statsList.size());
-            checkLevelStats("level S", -1, -1, statsList.get(0).first());
-            checkLevelStats("level L", 3, 2.0, statsList.get(1).first());
+            checkLevelStats("level S", -1, -1, statsList.get(0).getFirst());
+            checkLevelStats("level L", 3, 2.0, statsList.get(1).getFirst());
         } catch (IOException e) {
             fail("Exception should not have been thrown");
         }
