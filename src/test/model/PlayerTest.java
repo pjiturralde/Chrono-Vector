@@ -2,8 +2,7 @@ package model;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.LinkedList;
-import java.util.TreeSet;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -86,13 +85,13 @@ public class PlayerTest {
         p2.addCompletedLevelStats(l1, 1);
         p2.addCompletedLevelStats(l2, 2);
 
-        LinkedList<TreeSet<LevelStats>> statsList = p2.getCompletedLevelStats();
+        List<List<LevelStats>> statsList = p2.getCompletedLevelStats();
 
-        TreeSet<LevelStats> level1History = statsList.get(l1.getLevelIndex());
-        LevelStats level1Stat = level1History.first();
+        List<LevelStats> level1History = statsList.get(l1.getLevelIndex());
+        LevelStats level1Stat = level1History.getFirst();
 
-        TreeSet<LevelStats> level2History = statsList.get(l2.getLevelIndex());
-        LevelStats level2Stat = level2History.first();
+        List<LevelStats> level2History = statsList.get(l2.getLevelIndex());
+        LevelStats level2Stat = level2History.getFirst();
 
         assertEquals(level1Stat.getName(), l1.getName());
         assertEquals(level1Stat.getLeastMovesTaken(), l1.getMovesTaken());
@@ -105,9 +104,9 @@ public class PlayerTest {
 
         p2.addCompletedLevelStats(stats, 2);
 
-        assertEquals(statsList.get(2).first().getName(), stats.getName());
-        assertEquals(statsList.get(2).first().getLeastMovesTaken(), stats.getLeastMovesTaken());
-        assertEquals(statsList.get(2).first().getLeastTimeTaken(), stats.getLeastTimeTaken());
+        assertEquals(statsList.get(2).getFirst().getName(), stats.getName());
+        assertEquals(statsList.get(2).getFirst().getLeastMovesTaken(), stats.getLeastMovesTaken());
+        assertEquals(statsList.get(2).getFirst().getLeastTimeTaken(), stats.getLeastTimeTaken());
     }
 
     @Test
