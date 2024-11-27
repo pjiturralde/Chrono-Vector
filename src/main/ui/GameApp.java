@@ -24,9 +24,6 @@ import model.LevelStats;
 public class GameApp extends JFrame implements ActionListener, KeyListener {
     private static final String JSON_STORE = "./data/player.json";
     private static final String GAME_TITLE = "Chrono Vector";
-    private static final int MOVES_THEN_TIME_SORT = 0;
-    private static final int TIME_THEN_MOVES_SORT = 1;
-    private static final int ATTEMPT_SORT = 2;
 
     private LinkedList<Level> levels;
     private Level currentLevel;
@@ -52,6 +49,11 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
     private String previousMenu;
     private Level selectedLevel;
     private JComboBox sortByBox;
+
+    private JPanel frontMenuPanel;
+    private JPanel levelSelectScrollPane;
+    private JPanel completedLevelSelectScrollPanel;
+    private LevelHistoryViewPanel levelHistoryViewPanel;
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -194,10 +196,10 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
         cardPanel = new JPanel(cardLayout);
         cardPanel.setPreferredSize(new Dimension(500, 600));
 
-        JPanel frontMenuPanel = createFrontMenu();
-        JPanel levelSelectScrollPane = createLevelSelectMenu();
-        JPanel completedLevelSelectScrollPanel = createCompletedLevelSelectMenu();
-        JPanel levelHistoryViewPanel = createLevelHistoryView();
+        frontMenuPanel = createFrontMenu();
+        levelSelectScrollPane = createLevelSelectMenu();
+        completedLevelSelectScrollPanel = createCompletedLevelSelectMenu();
+        levelHistoryViewPanel = new LevelHistoryViewPanel(player);
 
         cardPanel.add(frontMenuPanel, "Main Menu");
         cardPanel.add(levelSelectScrollPane, "Level Select");
@@ -524,9 +526,9 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
                     }
                     string += "<html>";
 
-                    selectedLevel = level;
-                    levelHistory.setText(string);
-                    sortByBox.setSelectedIndex(0);
+                    levelHistoryViewPanel.setSelectedLevel(level);
+                    levelHistoryViewPanel.setText(string);
+                    levelHistoryViewPanel.resetSortByBox();
                 }
             });
         }
@@ -542,131 +544,6 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
         scrollPane.getViewport().setOpaque(false);
         scrollPane.setBorder(null);
 
-        mainPanel.add(scrollPane);
-
-        return mainPanel;
-    }
-
-    // MODIFIES: this
-    // EFFECTS: creates level history view scroll pane and returns it
-    public JPanel createLevelHistoryView() {
-        JPanel mainPanel = new MenuPanel();
-        mainPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        mainPanel.setPreferredSize(new Dimension(500, 600));
-
-        JPanel scrollPanel = new JPanel();
-        scrollPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
-        scrollPanel.setPreferredSize(new Dimension(500, 10000));
-        scrollPanel.setOpaque(false);
-
-        levelHistory = new JLabel();
-        levelHistory.setForeground(new Color(230, 230, 230));
-        levelHistory.setFont(new Font("DialogInput", Font.PLAIN, 15));
-        scrollPanel.add(levelHistory);
-
-        JScrollPane scrollPane = new JScrollPane(scrollPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        JScrollBar verticalBar = scrollPane.getVerticalScrollBar();
-        verticalBar.setUI(new CustomScrollBar("src\\resources\\images\\Vertical Scroll Bar.PNG"));
-        verticalBar.setPreferredSize(new Dimension(26,10));
-        verticalBar.setUnitIncrement(25);
-        scrollPane.setPreferredSize(new Dimension(490, 550));
-        scrollPane.setOpaque(false);
-        scrollPane.getViewport().setOpaque(false);
-        scrollPane.setBorder(null);
-
-        JCheckBox topAndBottomCheckBox = new JCheckBox();
-        topAndBottomCheckBox.setOpaque(false);
-
-        JLabel topAndBottomLabel = new JLabel("Top and bottom results only:");
-        topAndBottomLabel.setForeground(new Color(230, 230, 230));
-        topAndBottomLabel.setFont(new Font("DialogInput", Font.PLAIN, 13));
-
-        String[] sortOptions = {"Moves then Time", "Time then Moves", "Attempts"};
-        sortByBox = new JComboBox(sortOptions);
-
-        JLabel sortLabel = new JLabel("Sort by:");
-        sortLabel.setForeground(new Color(230, 230, 230));
-        sortLabel.setFont(new Font("DialogInput", Font.PLAIN, 13));
-
-        sortByBox.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String selected = (String) sortByBox.getSelectedItem();
-                if (selected.equals("Moves then Time")) {
-                    player.sortCompletedlevelStats(selectedLevel.getLevelIndex(), MOVES_THEN_TIME_SORT);
-                } else if (selected.equals("Time then Moves")) {
-                    player.sortCompletedlevelStats(selectedLevel.getLevelIndex(), TIME_THEN_MOVES_SORT);
-                } else if (selected.equals("Attempts")) {
-                    player.sortCompletedlevelStats(selectedLevel.getLevelIndex(), ATTEMPT_SORT);
-                }
-
-                if (topAndBottomCheckBox.isSelected()) {
-                    LevelStats statsTop = player.getCompletedLevelStats().get(selectedLevel.getLevelIndex()).get(0);
-                    LevelStats statsBottom = player.getCompletedLevelStats().get(selectedLevel.getLevelIndex()).get(player.getCompletedLevelStats().get(selectedLevel.getLevelIndex()).size()-1);
-    
-                    String string = "<html><br>Attempt #" + statsTop.getAttemptNum() + "<br>Moves taken: "
-                    + statsTop.getLeastMovesTaken()
-                    + " moves" + "<br>Time taken: " + statsTop.getLeastTimeTaken() + " seconds<br>";
-    
-                    if (statsTop != statsBottom) {
-                        string += "<br>Attempt #" + statsBottom.getAttemptNum() + "<br>Moves taken: "
-                        + statsBottom.getLeastMovesTaken()
-                        + " moves" + "<br>Time taken: " + statsBottom.getLeastTimeTaken() + " seconds<br>";
-                    }
-                    string += "<html>";
-                    levelHistory.setText(string);
-                } else {
-                    String string = "<html>";
-
-                    for (LevelStats stats : player.getCompletedLevelStats().get(selectedLevel.getLevelIndex())) {
-                        string += "<br>Attempt #" + stats.getAttemptNum() + "<br>Moves taken: "
-                                + stats.getLeastMovesTaken()
-                                + " moves" + "<br>Time taken: " + stats.getLeastTimeTaken() + " seconds<br>";
-                    }
-                    string += "<html>";
-    
-                    levelHistory.setText(string);
-                }
-            }
-        });
-        
-        topAndBottomCheckBox.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (topAndBottomCheckBox.isSelected()) {
-                    LevelStats statsTop = player.getCompletedLevelStats().get(selectedLevel.getLevelIndex()).get(0);
-                    LevelStats statsBottom = player.getCompletedLevelStats().get(selectedLevel.getLevelIndex()).get(player.getCompletedLevelStats().get(selectedLevel.getLevelIndex()).size()-1);
-    
-                    String string = "<html><br>Attempt #" + statsTop.getAttemptNum() + "<br>Moves taken: "
-                    + statsTop.getLeastMovesTaken()
-                    + " moves" + "<br>Time taken: " + statsTop.getLeastTimeTaken() + " seconds<br>";
-    
-                    if (statsTop != statsBottom) {
-                        string += "<br>Attempt #" + statsBottom.getAttemptNum() + "<br>Moves taken: "
-                        + statsBottom.getLeastMovesTaken()
-                        + " moves" + "<br>Time taken: " + statsBottom.getLeastTimeTaken() + " seconds<br>";
-                    }
-                    string += "<html>";
-    
-                    levelHistory.setText(string);
-                } else {
-                    String string = "<html>";
-
-                    for (LevelStats stats : player.getCompletedLevelStats().get(selectedLevel.getLevelIndex())) {
-                        string += "<br>Attempt #" + stats.getAttemptNum() + "<br>Moves taken: "
-                                + stats.getLeastMovesTaken()
-                                + " moves" + "<br>Time taken: " + stats.getLeastTimeTaken() + " seconds<br>";
-                    }
-                    string += "<html>";
-    
-                    levelHistory.setText(string);
-                }
-            }
-        });
-
-        mainPanel.add(topAndBottomLabel);
-        mainPanel.add(topAndBottomCheckBox);
-        mainPanel.add(sortLabel);
-        mainPanel.add(sortByBox);
         mainPanel.add(scrollPane);
 
         return mainPanel;
@@ -772,6 +649,8 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
         try {
             player = jsonReader.read();
             gameplayPanel.setPlayer(player);
+            levelHistoryViewPanel.setPlayer(player);
+            // TODO: set player for all panels (if needed)
             System.out.println("Loaded from " + JSON_STORE);
         } catch (IOException e) {
             System.out.println("Unable to read from file: " + JSON_STORE);
