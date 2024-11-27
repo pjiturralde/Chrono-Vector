@@ -1,5 +1,6 @@
 {"completedLevelStats": [[{
-    "leastTimeTaken": 1.8759399,
+    "leastTimeTaken": 1.2273946,
     "name": "level 1",
-    "leastMovesTaken": 10
+    "leastMovesTaken": 10,
+    "attemptNum": 1
 }]]}
