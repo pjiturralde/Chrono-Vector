@@ -31,3 +31,44 @@ To me this is a good opportunity to both create a puzzle I find interesting and 
 - You can find a visual component anywhere in the main menu of this game, such as the title icon, or the menu buttons.
 - You can save the state of the application to file in the front main menu.
 - You can load the state of the application from file in the front main menu.
+
+## Phase 4 Task 2
+
+Fri Nov 29 09:51:33 PST 2024
+New level stats were added to Player's level 1 history
+
+
+Fri Nov 29 09:51:36 PST 2024
+New level stats were added to Player's level 1 history
+
+
+Fri Nov 29 09:51:39 PST 2024
+New level stats were added to Player's level 1 history
+
+
+Fri Nov 29 09:51:44 PST 2024
+New level stats were added to Player's level 1 history
+
+
+Fri Nov 29 09:51:47 PST 2024
+New level stats were added to Player's level 1 history
+
+
+Fri Nov 29 09:51:51 PST 2024
+New level stats were added to Player's level 1 history
+
+
+Fri Nov 29 09:51:53 PST 2024
+Sorted Player's level 1 history by moves and then time
+
+
+Fri Nov 29 09:51:58 PST 2024
+Sorted Player's level 1 history by time and then moves
+
+
+Fri Nov 29 09:51:59 PST 2024
+Sorted Player's level 1 history by attempts
+
+
+Fri Nov 29 09:52:00 PST 2024
+Cleared Player's level 1 history
