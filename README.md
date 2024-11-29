@@ -32,7 +32,7 @@ To me this is a good opportunity to both create a puzzle I find interesting and 
 - You can save the state of the application to file in the front main menu.
 - You can load the state of the application from file in the front main menu.
 
-## Phase 4 Task 2
+## Phase 4: Task 2
 
 Fri Nov 29 09:51:33 PST 2024
 New level stats were added to Player's level 1 history
@@ -72,3 +72,7 @@ Sorted Player's level 1 history by attempts
 
 Fri Nov 29 09:52:00 PST 2024
 Cleared Player's level 1 history
+
+## Phase 4: Task 3
+
+Overall I like how the structure of this looks but there's just a couple things I would change. The first thing would be that I would have another class to handle the levelHistory other than Player just because it would make more sense to have a Player class to handle any movement in game and have another separate class to act as the user as opposed to the having the playable character handle the user actions. Another thing I would change is to have another super class for some of the other panels so that there's less clutter within each individual file. Otherwise, I would like to move some of the code inside GameApp into another file such as anything involving the layout and the border panels in the front main menu just so everything is more compartmentalized and so GameApp is easier to look through.
