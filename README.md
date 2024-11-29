@@ -22,3 +22,12 @@ To me this is a good opportunity to both create a puzzle I find interesting and 
 - As a user, I want to be able to select a level to play.
 - As a user, I want to be given the option to save my completed levels data
 - As a user, I want to be given the option to load my completed levels data
+
+## Instructions for End User
+
+- You can add level stats to your Player's level history by successfully completing a level.
+- You can highlight the top and bottom results of your Player's level history by pressing the Top and bottom results only checkbox.
+- You can sort your level history by using the combo box in the top right of your level history panel.
+- You can find a visual component anywhere in the main menu of this game, such as the title icon, or the menu buttons.
+- You can save the state of the application to file in the front main menu.
+- You can load the state of the application from file in the front main menu.
