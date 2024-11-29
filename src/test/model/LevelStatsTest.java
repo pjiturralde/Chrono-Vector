@@ -23,6 +23,7 @@ public class LevelStatsTest {
         assertEquals(levelStats.getLeastTimeTaken(), 0);
     }
 
+    @SuppressWarnings("methodlength")
     @Test
     void updateTest() {
         Level l1 = new Level("level x", 1, 0, 0, 10, 10, 100, 100, 1, 0);
