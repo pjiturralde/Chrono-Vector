@@ -2,7 +2,9 @@ package ui;
 
 import javax.swing.*;
 
+import model.EventLog;
 import model.Player;
+import model.Event;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -132,6 +134,9 @@ public class FrontMenuPanel extends MenuPanel implements ActionListener {
         } else if (e.getSource() == loadButton) {
             gameApp.loadPlayer();
         } else if (e.getSource() == quitButton) {
+            for (Event event : EventLog.getInstance()) {
+                System.out.println(event.toString() + "\n\n");
+            }
             System.exit(0);
         }
     }
