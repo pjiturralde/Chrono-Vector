@@ -12,7 +12,6 @@ import java.util.List;
 public class Player implements Writable {
     private static final int MOVES_THEN_TIME_SORT = 0;
     private static final int TIME_THEN_MOVES_SORT = 1;
-    private static final int ATTEMPT_SORT = 2;
     private Vector2 position;
     private List<List<LevelStats>> completedLevelStats;
     
