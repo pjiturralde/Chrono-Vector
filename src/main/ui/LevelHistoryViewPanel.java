@@ -16,42 +16,46 @@ public class LevelHistoryViewPanel extends MenuPanel implements ActionListener {
     private static final int TIME_THEN_MOVES_SORT = 1;
     private static final int ATTEMPT_SORT = 2;
 
-    private JLabel levelHistory;
+    private JPanel scrollPanel;
+    private JScrollPane scrollPane;
+    private JLabel levelHistoryLabel;
+    private JLabel levelNameLabel;
     private JComboBox<String> sortByBox;
     private JCheckBox topAndBottomCheckBox;
-    private Player player;
+    private GameApp gameApp;
     private Level selectedLevel;
 
     // EFFECTS: constructs LevelHistoryViewPanel
-    LevelHistoryViewPanel(Player player) {
-        this.player = player;
+    LevelHistoryViewPanel(GameApp gameApp) {
+        this.gameApp = gameApp;
         selectedLevel = null;
 
         this.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
         this.setPreferredSize(new Dimension(500, 600));
 
-        JPanel scrollPanel = createScrollPanel();
+        scrollPanel = createScrollPanel();
 
-        levelHistory = createLevelHistory();
+        levelHistoryLabel = createLevelHistoryLabel();
 
-        scrollPanel.add(levelHistory);
+        scrollPanel.add(levelHistoryLabel);
 
-        JScrollPane scrollPane = createScrollPane(scrollPanel);
+        scrollPane = createScrollPane(scrollPanel);
 
         topAndBottomCheckBox = new JCheckBox();
         topAndBottomCheckBox.setOpaque(false);
+        topAndBottomCheckBox.addActionListener(this);
 
-        JLabel topAndBottomLabel = new JLabel("Top and bottom results only:");
-        topAndBottomLabel.setForeground(new Color(230, 230, 230));
-        topAndBottomLabel.setFont(new Font("DialogInput", Font.PLAIN, 13));
+        JLabel topAndBottomLabel = createLabel("Top and bottom results only:");
 
-        String[] sortOptions = {"Moves then Time", "Time then Moves", "Attempts"};
+        String[] sortOptions = { "Moves then Time", "Time then Moves", "Attempts" };
         sortByBox = new JComboBox<String>(sortOptions);
+        sortByBox.addActionListener(this);
 
-        JLabel sortLabel = new JLabel("Sort by:");
-        sortLabel.setForeground(new Color(230, 230, 230));
-        sortLabel.setFont(new Font("DialogInput", Font.PLAIN, 13));
+        JLabel sortLabel = createLabel("Sort by:");
 
+        levelNameLabel = createLevelNameLabel();
+
+        this.add(levelNameLabel);
         this.add(topAndBottomLabel);
         this.add(topAndBottomCheckBox);
         this.add(sortLabel);
@@ -59,25 +63,61 @@ public class LevelHistoryViewPanel extends MenuPanel implements ActionListener {
         this.add(scrollPane);
     }
 
+    // MODIFIES: this
+    // EFFECTS: resizes panel and components to given width and height
+    @Override
+    public void resizePanel(int width, int height) {
+        final float PANEL_TO_PANE_WIDTH_RATIO = 0.98f;
+        final float PANEL_TO_PANE_HEIGHT_RATIO = 0.7f;
+
+        super.resizePanel(width, height);
+
+        int paneWidth = Math.round(width * PANEL_TO_PANE_WIDTH_RATIO);
+        int paneHeight = Math.round(height * PANEL_TO_PANE_HEIGHT_RATIO);
+
+        scrollPane.setPreferredSize(new Dimension(paneWidth, paneHeight));
+    }
+
+    // EFFECTS: creates level name label and returns it
+    public JLabel createLevelNameLabel() {
+        JLabel label = new JLabel();
+        label.setForeground(new Color(230, 230, 230));
+        label.setFont(new Font("DialogInput", Font.PLAIN, 16));
+        label.setPreferredSize(new Dimension(490, 30));
+        label.setHorizontalAlignment(JLabel.CENTER);
+
+        return label;
+    }
+
+    // EFFECTS: creates customized label and returns it
+    public JLabel createLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setForeground(new Color(230, 230, 230));
+        label.setFont(new Font("DialogInput", Font.PLAIN, 14));
+
+        return label;
+    }
+
+    // MODIFIES: this
     // EFFECTS: resets sortByBox
     public void resetSortByBox() {
         sortByBox.setSelectedIndex(0);
     }
 
     // EFFECTS: sets up levelHistory and returns it
-    public JLabel createLevelHistory() {
-        levelHistory = new JLabel();
-        levelHistory.setForeground(new Color(230, 230, 230));
-        levelHistory.setFont(new Font("DialogInput", Font.PLAIN, 15));
+    public JLabel createLevelHistoryLabel() {
+        levelHistoryLabel = new JLabel();
+        levelHistoryLabel.setForeground(new Color(230, 230, 230));
+        levelHistoryLabel.setFont(new Font("DialogInput", Font.PLAIN, 15));
 
-        return levelHistory;
+        return levelHistoryLabel;
     }
 
     // EFFECTS: sets up scrollPanel and returns it
     public JPanel createScrollPanel() {
         JPanel scrollPanel = new JPanel();
         scrollPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
-        scrollPanel.setPreferredSize(new Dimension(500, 10000));
+        // scrollPanel.setPreferredSize(new Dimension(500, 10000));
         scrollPanel.setOpaque(false);
 
         return scrollPanel;
@@ -88,10 +128,10 @@ public class LevelHistoryViewPanel extends MenuPanel implements ActionListener {
         JScrollPane scrollPane = new JScrollPane(scrollPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         JScrollBar verticalBar = scrollPane.getVerticalScrollBar();
-        verticalBar.setUI(new CustomScrollBar("src\\resources\\images\\Vertical Scroll Bar.PNG"));
-        verticalBar.setPreferredSize(new Dimension(26,10));
+        verticalBar.setUI(new CustomScrollBar("src/resources/images/Vertical Scroll Bar.PNG"));
+        verticalBar.setPreferredSize(new Dimension(26, 10));
         verticalBar.setUnitIncrement(25);
-        scrollPane.setPreferredSize(new Dimension(490, 550));
+        scrollPane.setPreferredSize(new Dimension(490, 500));
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setOpaque(false);
         scrollPane.setBorder(null);
@@ -99,15 +139,11 @@ public class LevelHistoryViewPanel extends MenuPanel implements ActionListener {
         return scrollPane;
     }
 
-    // EFFECTS: sets the text of LevelHistory
-    public void setText(String text) {
-        levelHistory.setText(text);
-    }
-
     // MODIFIES: this
-    // EFFECTS: sets this.player to given player
-    public void setPlayer(Player player) {
-        this.player = player;
+    // EFFECTS: sets the text of LevelHistory
+    public void setText(String history, String levelName) {
+        levelHistoryLabel.setText(history);
+        levelNameLabel.setText(levelName);
     }
 
     // MODIFIES: this
@@ -118,42 +154,50 @@ public class LevelHistoryViewPanel extends MenuPanel implements ActionListener {
 
     // REQUIRES: selectedLevel != null && player != null
     // EFFECTS: returns a string of all selectedLevel's LevelStats
-    public String listAllLevels() {
-        String string = "<html>";
-    
+    public String listLevelHistory() {
+        Player player = gameApp.getPlayer();
+
+        String levelHistory = "<html>";
+
         for (LevelStats stats : player.getCompletedLevelStats().get(selectedLevel.getLevelIndex())) {
-            string += "<br>Attempt #" + stats.getAttemptNum() + "<br>Moves taken: "
+            levelHistory += "<br>Attempt #" + stats.getAttemptNum() + "<br>Moves taken: "
                     + stats.getLeastMovesTaken()
                     + " moves" + "<br>Time taken: " + stats.getLeastTimeTaken() + " seconds<br>";
         }
-        string += "<html>";
+        levelHistory += "<html>";
 
-        return string;
+        return levelHistory;
     }
 
     // REQUIRES: selectedLevel != null && player != null
     // EFFECTS: returns a string of all top and bottom LevelStats of selectedLevel
     public String listTopAndBottomLevels() {
-        LevelStats statsTop = player.getCompletedLevelStats().get(selectedLevel.getLevelIndex()).get(0);
-        LevelStats statsBottom = player.getCompletedLevelStats().get(selectedLevel.getLevelIndex()).get(player.getCompletedLevelStats().get(selectedLevel.getLevelIndex()).size()-1);
+        Player player = gameApp.getPlayer();
 
-        String string = "<html><br>Attempt #" + statsTop.getAttemptNum() + "<br>Moves taken: "
-        + statsTop.getLeastMovesTaken()
-        + " moves" + "<br>Time taken: " + statsTop.getLeastTimeTaken() + " seconds<br>";
+        LevelStats statsTop = player.getCompletedLevelStats().get(selectedLevel.getLevelIndex()).get(0);
+        LevelStats statsBottom = player.getCompletedLevelStats().get(selectedLevel.getLevelIndex())
+                .get(player.getCompletedLevelStats().get(selectedLevel.getLevelIndex()).size() - 1);
+
+        String levelHistory = "<html><br>Attempt #" + statsTop.getAttemptNum() + "<br>Moves taken: "
+                + statsTop.getLeastMovesTaken()
+                + " moves" + "<br>Time taken: " + statsTop.getLeastTimeTaken() + " seconds<br>";
 
         if (statsTop != statsBottom) {
-            string += "<br>Attempt #" + statsBottom.getAttemptNum() + "<br>Moves taken: "
-            + statsBottom.getLeastMovesTaken()
-            + " moves" + "<br>Time taken: " + statsBottom.getLeastTimeTaken() + " seconds<br>";
+            levelHistory += "<br>Attempt #" + statsBottom.getAttemptNum() + "<br>Moves taken: "
+                    + statsBottom.getLeastMovesTaken()
+                    + " moves" + "<br>Time taken: " + statsBottom.getLeastTimeTaken() + " seconds<br>";
         }
-        string += "<html>";
+        levelHistory += "<html>";
 
-        return string;
+        return levelHistory;
     }
 
+    // MODIFIES: this
     // EFFECTS: handles buttons
     @Override
     public void actionPerformed(ActionEvent e) {
+        Player player = gameApp.getPlayer();
+
         if (e.getSource() == sortByBox) {
             String selected = (String) sortByBox.getSelectedItem();
             if (selected.equals("Moves then Time")) {
@@ -163,17 +207,17 @@ public class LevelHistoryViewPanel extends MenuPanel implements ActionListener {
             } else if (selected.equals("Attempts")) {
                 player.sortCompletedlevelStats(selectedLevel.getLevelIndex(), ATTEMPT_SORT);
             }
-    
+
             if (topAndBottomCheckBox.isSelected()) {
-                levelHistory.setText(listTopAndBottomLevels());
+                levelHistoryLabel.setText(listTopAndBottomLevels());
             } else {
-                levelHistory.setText(listAllLevels());
+                levelHistoryLabel.setText(listLevelHistory());
             }
         } else if (e.getSource() == topAndBottomCheckBox) {
             if (topAndBottomCheckBox.isSelected()) {
-                levelHistory.setText(listTopAndBottomLevels());
+                levelHistoryLabel.setText(listTopAndBottomLevels());
             } else {
-                levelHistory.setText(listAllLevels());
+                levelHistoryLabel.setText(listLevelHistory());
             }
         }
     }
