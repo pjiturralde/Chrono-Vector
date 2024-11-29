@@ -29,7 +29,6 @@ public class LevelHistoryViewPanel extends MenuPanel implements ActionListener {
     // EFFECTS: constructs LevelHistoryViewPanel
     LevelHistoryViewPanel(GameApp gameApp) {
         this.gameApp = gameApp;
-        selectedLevel = null;
 
         this.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
         this.setPreferredSize(new Dimension(500, 600));
@@ -205,6 +204,16 @@ public class LevelHistoryViewPanel extends MenuPanel implements ActionListener {
     }
 
     // MODIFIES: this
+    // EFFECTS: checks if topAndBottomCheckBox is selected and proceeds accordingly
+    public void checkTopAndBottomCheckBox() {
+        if (topAndBottomCheckBox.isSelected()) {
+            levelHistoryLabel.setText(listTopAndBottomLevels());
+        } else {
+            levelHistoryLabel.setText(listLevelHistory());
+        }
+    }
+
+    // MODIFIES: this
     // EFFECTS: handles buttons
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -220,17 +229,9 @@ public class LevelHistoryViewPanel extends MenuPanel implements ActionListener {
                 player.sortCompletedlevelStats(selectedLevel.getLevelIndex(), ATTEMPT_SORT);
             }
 
-            if (topAndBottomCheckBox.isSelected()) {
-                levelHistoryLabel.setText(listTopAndBottomLevels());
-            } else {
-                levelHistoryLabel.setText(listLevelHistory());
-            }
+            checkTopAndBottomCheckBox();
         } else if (e.getSource() == topAndBottomCheckBox) {
-            if (topAndBottomCheckBox.isSelected()) {
-                levelHistoryLabel.setText(listTopAndBottomLevels());
-            } else {
-                levelHistoryLabel.setText(listLevelHistory());
-            }
+            checkTopAndBottomCheckBox();
         } else if (e.getSource() == clearButton) {
             player.clearLevelHistory(selectedLevel.getLevelIndex());
             levelHistoryLabel.setText("");

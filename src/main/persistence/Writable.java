@@ -1,4 +1,5 @@
 package persistence;
+
 import org.json.JSONObject;
 
 // Referenced from the JsonSerialization Demo
