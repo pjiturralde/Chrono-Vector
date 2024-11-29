@@ -1,5 +1,6 @@
 package ui;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.awt.*;
 import javax.swing.*;
@@ -10,18 +11,22 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import model.EventLog;
 import model.Level;
 import model.Projectile;
 import model.Wall;
 import persistence.JsonReader;
 import persistence.JsonWriter;
 import model.Player;
+import model.Event;
 
 // Game application
-public class GameApp extends JFrame implements ActionListener, KeyListener, ComponentListener {
+public class GameApp extends JFrame implements ActionListener, KeyListener, ComponentListener, WindowListener {
     private static final String JSON_STORE = "./data/player.json";
     private static final String GAME_TITLE = "Chrono Vector";
 
@@ -88,6 +93,7 @@ public class GameApp extends JFrame implements ActionListener, KeyListener, Comp
         this.setSize(1920, 1080);
         this.setLayout(new BorderLayout());
         this.addKeyListener(this);
+        this.addWindowListener(this);
         this.addComponentListener(this);
         this.setMinimumSize(new Dimension(800, 800));
         this.setVisible(true);
@@ -302,6 +308,43 @@ public class GameApp extends JFrame implements ActionListener, KeyListener, Comp
                     movePlayer(1, 0);
                     break;
             }
+        }
+    }
+
+    @Override
+    public void windowClosed(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowOpened(WindowEvent e) {
+        
+    }
+
+    @Override
+    public void windowIconified(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowDeiconified(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowActivated(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowDeactivated(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowClosing(WindowEvent e) {
+        for (Event event : EventLog.getInstance()) {
+            System.out.println(event.toString() + "\n\n");
         }
     }
 
