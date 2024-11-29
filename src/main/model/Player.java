@@ -14,7 +14,6 @@ public class Player implements Writable {
     private static final int TIME_THEN_MOVES_SORT = 1;
     private Vector2 position;
     private List<List<LevelStats>> completedLevelStats;
-    
 
     // EFFECTS: constructs a Player object
     public Player(int posX, int posY) {
@@ -47,6 +46,8 @@ public class Player implements Writable {
         } else {
             completedLevelStats.get(level.getLevelIndex()).add(stats);
         }
+        EventLog.getInstance().logEvent(
+                new Event("New level stats were added to Player's level " + level.getLevelIndex() + " history"));
     }
 
     // MODIFIES: this
@@ -59,6 +60,8 @@ public class Player implements Writable {
         } else {
             completedLevelStats.get(levelIndex).add(stats);
         }
+        EventLog.getInstance()
+                .logEvent(new Event("New level stats were added to Player's level " + levelIndex + " history"));
     }
 
     // MODIFIES: this
@@ -67,18 +70,23 @@ public class Player implements Writable {
         Comparator<LevelStats> comparator;
 
         if (sortBy == MOVES_THEN_TIME_SORT) {
+            EventLog.getInstance()
+                    .logEvent(new Event("Sorted Player's level " + levelIndex + "history by moves and then time"));
             comparator = (o1, o2) -> {
                 int leastMovesComparison = Integer.compare(o1.getLeastMovesTaken(), o2.getLeastMovesTaken());
                 int leastTimeComparison = Double.compare(o1.getLeastTimeTaken(), o2.getLeastTimeTaken());
                 return (leastMovesComparison != 0) ? leastMovesComparison : leastTimeComparison;
             };
         } else if (sortBy == TIME_THEN_MOVES_SORT) {
+            EventLog.getInstance()
+                    .logEvent(new Event("Sorted Player's level " + levelIndex + "history by time and then moves"));
             comparator = (o1, o2) -> {
                 int leastTimeComparison = Double.compare(o1.getLeastTimeTaken(), o2.getLeastTimeTaken());
                 int leastMovesComparison = Integer.compare(o1.getLeastMovesTaken(), o2.getLeastMovesTaken());
                 return (leastTimeComparison != 0) ? leastTimeComparison : leastMovesComparison;
             };
         } else {
+            EventLog.getInstance().logEvent(new Event("Sorted Player's level " + levelIndex + "history by attempts"));
             comparator = (o1, o2) -> {
                 int leastAttemptsComparison = Integer.compare(o1.getAttemptNum(), o2.getAttemptNum());
                 return leastAttemptsComparison;
@@ -86,6 +94,20 @@ public class Player implements Writable {
         }
 
         completedLevelStats.get(levelIndex).sort(comparator);
+    }
+
+    // EFFECTS: returns array of top and bottom results of
+    // completedLevelStats.get(levelIndex)
+    public LevelStats[] getTopAndBottomHistoryResults(int levelIndex) {
+        LevelStats[] topAndBottomHistoryResults = new LevelStats[2];
+
+        topAndBottomHistoryResults[0] = completedLevelStats.get(levelIndex).get(0);
+        topAndBottomHistoryResults[1] = completedLevelStats.get(levelIndex)
+                .get(completedLevelStats.get(levelIndex).size() - 1);
+
+        EventLog.getInstance()
+                .logEvent(new Event("Highlighted top and bottom results of Player's level " + levelIndex + " history"));
+        return topAndBottomHistoryResults;
     }
 
     // EFFECTS: returns Player's position
