@@ -1,12 +1,13 @@
 package ui;
 
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.awt.*;
 import javax.swing.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.FileNotFoundException;
@@ -18,12 +19,13 @@ import model.Wall;
 import persistence.JsonReader;
 import persistence.JsonWriter;
 import model.Player;
-import model.LevelStats;
 
 // Game application
-public class GameApp extends JFrame implements ActionListener, KeyListener {
+public class GameApp extends JFrame implements ActionListener, KeyListener, ComponentListener {
     private static final String JSON_STORE = "./data/player.json";
     private static final String GAME_TITLE = "Chrono Vector";
+
+    private Timer resizeTimer;
 
     private LinkedList<Level> levels;
     private Level currentLevel;
@@ -32,28 +34,244 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
     private JsonWriter jsonWriter;
     private JsonReader jsonReader;
 
-    private JPanel cardPanel;
-    private CardLayout cardLayout;
+    private JPanel menuCardPanel;
+    private CardLayout menuCardLayout;
 
-    private JButton[] levelButtons;
-    private JButton[] completedLevelButtons;
     private JButton backButton;
-    private JLabel levelHistory;
 
     private GameplayPanel gameplayPanel;
     private JLayeredPane layeredGamePane;
-    private JPanel mainScreenPanel;
-    private JPanel inGameMenuPanel;
-    private JLabel inGameMenuLabel;
+    private MainScreenPanel mainScreenPanel;
+    private InGameMenuPanel inGameMenuPanel;
 
     private String previousMenu;
-    private Level selectedLevel;
-    private JComboBox sortByBox;
 
-    private JPanel frontMenuPanel;
-    private JPanel levelSelectScrollPane;
-    private JPanel completedLevelSelectScrollPanel;
+    private JPanel centerPanel;
+    private JPanel northPanel;
+    private JPanel southPanel;
+
+    private JLabel titleLabel;
+
+    private FrontMenuPanel frontMenuPanel;
+    private LevelSelectMenuPanel levelSelectMenuPanel;
+    private CompletedLevelSelectMenuPanel completedLevelSelectMenuPanel;
     private LevelHistoryViewPanel levelHistoryViewPanel;
+
+    // EFFECTS: runs the Game application
+    public GameApp() {
+        init();
+    }
+
+    // MODIFIES: this
+    // EFFECTS: initializes game and menu
+    private void init() {
+        this.levels = new LinkedList<Level>();
+        this.inGame = false;
+        this.player = new Player();
+        this.jsonReader = new JsonReader(JSON_STORE);
+        this.jsonWriter = new JsonWriter(JSON_STORE);
+
+        constructAllLevels();
+
+        titleLabel = createTitleLabel();
+
+        initializeMenuCardPanel();
+
+        backButton = createBackButton();
+
+        initializeMainScreenPanel();
+
+        initializeInGameUI();
+
+        this.setTitle(GAME_TITLE);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setSize(1920, 1080);
+        this.setLayout(new BorderLayout());
+        this.addKeyListener(this);
+        this.addComponentListener(this);
+        this.setMinimumSize(new Dimension(800, 800));
+        this.setVisible(true);
+
+        toMainMenu();
+    }
+
+    // EFFECTS: creates back button and returns it
+    public JButton createBackButton() {
+        JButton button = new JButton("Back");
+        button.setPreferredSize(new Dimension(100, 100));
+        button.setVisible(false);
+        button.setEnabled(false);
+        button.addActionListener(this);
+
+        button.setHorizontalTextPosition(JLabel.CENTER);
+        button.setVerticalTextPosition(JLabel.CENTER);
+
+        ImageIcon originalBackIcon = new ImageIcon("src/resources/images/Button.png");
+
+        Image resizedBackImage = originalBackIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+
+        ImageIcon backIcon = new ImageIcon(resizedBackImage);
+
+        button.setIcon(backIcon);
+        button.setBackground(new Color(0, 0, 44));
+        button.setContentAreaFilled(false);
+        button.setBorderPainted(false);
+        button.setForeground(new Color(230, 230, 230));
+        button.setFont(new Font("DialogInput", Font.PLAIN, 15));
+
+        return button;
+    }
+
+    // MODIFIES: this
+    // EFFECTS: initializes main screen panel and its components
+    public void initializeMainScreenPanel() {
+        centerPanel = new JPanel();
+        northPanel = new JPanel();
+        southPanel = new JPanel();
+
+        centerPanel.setPreferredSize(new Dimension(300, 300));
+        northPanel.setPreferredSize(new Dimension(300, 300));
+        southPanel.setPreferredSize(new Dimension(300, 120));
+
+        centerPanel.setBackground(new Color(0, 0, 44));
+        northPanel.setBackground(new Color(0, 0, 44));
+        southPanel.setBackground(new Color(0, 0, 44));
+
+        northPanel.setLayout(new BorderLayout());
+        northPanel.add(titleLabel);
+
+        southPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        southPanel.add(backButton);
+
+        centerPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
+
+        centerPanel.add(menuCardPanel);
+
+        mainScreenPanel = new MainScreenPanel();
+
+        mainScreenPanel.add(centerPanel, BorderLayout.CENTER);
+        mainScreenPanel.add(northPanel, BorderLayout.NORTH);
+        mainScreenPanel.add(southPanel, BorderLayout.SOUTH);
+    }
+
+    // MODIFIES: this
+    // EFFECTS: initializes menuCardPanel and its components
+    public void initializeMenuCardPanel() {
+        menuCardLayout = new CardLayout();
+        menuCardPanel = new JPanel(menuCardLayout);
+        menuCardPanel.setPreferredSize(new Dimension(500, 600));
+
+        levelSelectMenuPanel = new LevelSelectMenuPanel(this);
+        completedLevelSelectMenuPanel = new CompletedLevelSelectMenuPanel(this);
+        levelHistoryViewPanel = new LevelHistoryViewPanel(this);
+        frontMenuPanel = new FrontMenuPanel(this);
+
+        menuCardPanel.add(frontMenuPanel, "Main Menu");
+        menuCardPanel.add(levelSelectMenuPanel, "Level Select");
+        menuCardPanel.add(completedLevelSelectMenuPanel, "Completed Level Select");
+        menuCardPanel.add(levelHistoryViewPanel, "Level History");
+    }
+
+    // MODIFIES: this
+    // EFFECTS: initializes panels related to gameplay
+    public void initializeInGameUI() {
+        layeredGamePane = new JLayeredPane();
+        layeredGamePane.setPreferredSize(new Dimension(1920, 1080));
+
+        gameplayPanel = new GameplayPanel(this);
+        gameplayPanel.setBounds(0, 0, 1920, 1080);
+
+        inGameMenuPanel = new InGameMenuPanel(this);
+        inGameMenuPanel.setBounds(1920 / 2 - 700 / 2, 300, 700, 500);
+        inGameMenuPanel.setVisible(false);
+        inGameMenuPanel.setEnabled(false);
+
+        layeredGamePane.add(inGameMenuPanel, JLayeredPane.PALETTE_LAYER);
+        layeredGamePane.add(gameplayPanel, JLayeredPane.DEFAULT_LAYER);
+    }
+
+    // EFFECTS: creates title label and returns it
+    public JLabel createTitleLabel() {
+        ImageIcon originalIcon = new ImageIcon("src/resources/images/Game Title Icon.png");
+
+        Image resizedImage = originalIcon.getImage().getScaledInstance(500, 400, Image.SCALE_SMOOTH);
+
+        ImageIcon gameIcon = new ImageIcon(resizedImage);
+
+        JLabel label = new JLabel();
+        label.setIcon(gameIcon);
+        label.setHorizontalAlignment(JLabel.CENTER);
+
+        return label;
+    }
+
+    // MODIFIES: this
+    // EFFECTS: enables back button and makes it visible
+    public void enableBackButton() {
+        backButton.setVisible(true);
+        backButton.setEnabled(true);
+    }
+
+    // MODIFIES: this
+    // EFFECTS: disables back button and makes it invisible
+    public void disableBackButton() {
+        backButton.setVisible(false);
+        backButton.setEnabled(false);
+    }
+
+    // EFFECTS: returns levelHistoryViewPanel
+    public LevelHistoryViewPanel getLevelHistoryViewPanel() {
+        return levelHistoryViewPanel;
+    }
+
+    // EFFECTS: returns completedLevelSelectMenuPanel
+    public CompletedLevelSelectMenuPanel getCompletedLevelSelectMenuPanel() {
+        return completedLevelSelectMenuPanel;
+    }
+
+    // EFFECTS: returns levels
+    public LinkedList<Level> getLevels() {
+        return levels;
+    }
+
+    // MODIFIES: this
+    // EFFECTS: shows the menu panel specified by the given name
+    public void setMenuCardLayout(String name) {
+        menuCardLayout.show(menuCardPanel, name);
+    }
+
+    // MODIFIES: this
+    // EFFECTS: sets previousMenu to given string
+    public void setPreviousMenu(String previousMenu) {
+        this.previousMenu = previousMenu;
+    }
+
+    // MODIFIES: this
+    // EFFECTS: sets currentLevel to given level
+    public void setCurrentLevel(Level level) {
+        this.currentLevel = level;
+    }
+
+    // MODIFIES: this
+    // EFFECTS: sets inGame to given bool
+    public void setInGame(boolean bool) {
+        this.inGame = bool;
+    }
+
+    // EFFECTS: returns currentLevel
+    public Level getCurrentLevel() {
+        return currentLevel;
+    }
+
+    // EFFECTS: returns player
+    public Player getPlayer() {
+        return player;
+    }
+
+    // EFFECTS: returns gameplayPanel;
+    public GameplayPanel getGameplayPanel() {
+        return gameplayPanel;
+    }
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -65,6 +283,7 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
 
     }
 
+    // MODIFIES: this
     // EFFECTS: handles user input
     @Override
     public void keyReleased(KeyEvent e) {
@@ -84,11 +303,6 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
                     break;
             }
         }
-    }
-
-    // EFFECTS: runs the Game application
-    public GameApp() {
-        init();
     }
 
     // MODIFIES: this
@@ -115,13 +329,14 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
 
             inGameMenuPanel.setVisible(true);
             inGameMenuPanel.setEnabled(true);
-            inGameMenuLabel.setText("YOU LOST");
+            inGameMenuPanel.setText("YOU LOST");
 
             currentLevel.reset();
         } else if (currentLevel.completed()) {
             currentLevel.endTime();
             if (player.getCompletedLevelStats().size() > currentLevel.getLevelIndex()) {
-                player.addCompletedLevelStats(currentLevel, player.getCompletedLevelStats().get(currentLevel.getLevelIndex()).size() + 1);
+                player.addCompletedLevelStats(currentLevel,
+                        player.getCompletedLevelStats().get(currentLevel.getLevelIndex()).size() + 1);
             } else {
                 player.addCompletedLevelStats(currentLevel, 1);
             }
@@ -130,134 +345,144 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
 
             inGameMenuPanel.setVisible(true);
             inGameMenuPanel.setEnabled(true);
-            inGameMenuLabel.setText("<html>YOU WON<br>" + "Completed in " + currentLevel.getTimeTaken() + " seconds<br>"
+            inGameMenuPanel.setText("<html>YOU WON<br>" + "Completed in " + currentLevel.getTimeTaken() + " seconds<br>"
                     + "You took " + currentLevel.getMovesTaken() + " moves" + "<html>");
 
             currentLevel.reset();
         }
     }
 
+    @Override
+    public void componentShown(ComponentEvent e) {
+
+    }
+
+    @Override
+    public void componentHidden(ComponentEvent e) {
+
+    }
+
     // MODIFIES: this
-    // EFFECTS: initializes game and menu
-    private void init() {
-        this.levels = new LinkedList<Level>();
-        this.inGame = false;
-        this.player = new Player();
-        this.jsonReader = new JsonReader(JSON_STORE);
-        this.jsonWriter = new JsonWriter(JSON_STORE);
+    // EFFECTS: resizes UI components when gameApp is resized
+    @Override
+    public void componentResized(ComponentEvent e) {
+        final long DELAY = 50;
 
-        constructAllLevels();
+        final float FRAME_TO_MENU_PANEL_HEIGHT_RATIO = 0.555f;
+        final float MENU_PANEL_HEIGHT_TO_WIDTH_RATIO = 0.833f;
 
-        levelButtons = new JButton[levels.size()];
-        completedLevelButtons = new JButton[levels.size()];
+        int menuPanelHeight = Math.round(this.getHeight() * FRAME_TO_MENU_PANEL_HEIGHT_RATIO);
+        int menuPanelWidth = Math.round(menuPanelHeight * MENU_PANEL_HEIGHT_TO_WIDTH_RATIO);
 
-        ImageIcon originalIcon = new ImageIcon("src\\resources\\images\\Game Title Icon.png");
+        if (resizeTimer != null && resizeTimer.isRunning()) {
+            resizeTimer.stop();
+        }
 
-        Image resizedImage = originalIcon.getImage().getScaledInstance(500, 400, Image.SCALE_SMOOTH);
+        resizeTimer = new Timer((int) DELAY, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                resizeMainPanels();
 
-        ImageIcon gameIcon = new ImageIcon(resizedImage);
+                resizeNorthAndSouthPanels();
 
-        JLabel titleLabel = new JLabel();
-        titleLabel.setIcon(gameIcon);
-        titleLabel.setHorizontalAlignment(JLabel.CENTER);
+                resizeBackButton();
 
-        mainScreenPanel = new MainScreenPanel();
-        JPanel centerPanel = new JPanel();
-        JPanel northPanel = new JPanel();
-        JPanel eastPanel = new JPanel();
-        JPanel southPanel = new JPanel();
-        JPanel westPanel = new JPanel();
+                resizeTitleLabel();
 
-        centerPanel.setBackground(Color.red);
-        northPanel.setBackground(Color.green);
-        eastPanel.setBackground(Color.yellow);
-        southPanel.setBackground(Color.magenta);
-        westPanel.setBackground(Color.blue);
+                menuCardPanel.setPreferredSize(new Dimension(menuPanelWidth, menuPanelHeight));
 
-        centerPanel.setPreferredSize(new Dimension(300, 300));
-        northPanel.setPreferredSize(new Dimension(300, 300));
-        eastPanel.setPreferredSize(new Dimension(300, 300));
-        southPanel.setPreferredSize(new Dimension(300, 120));
-        westPanel.setPreferredSize(new Dimension(300, 300));
+                resizeTimer.stop();
+            }
+        });
 
-        centerPanel.setBackground(new Color(0, 0, 44));
-        northPanel.setBackground(new Color(0, 0, 44));
-        eastPanel.setBackground(new Color(0, 0, 44));
-        southPanel.setBackground(new Color(0, 0, 44));
-        westPanel.setBackground(new Color(0, 0, 44));
+        resizeTimer.setRepeats(false);
+        resizeTimer.start();
+    }
 
-        mainScreenPanel.add(centerPanel, BorderLayout.CENTER);
-        mainScreenPanel.add(northPanel, BorderLayout.NORTH);
-        mainScreenPanel.add(eastPanel, BorderLayout.EAST);
-        mainScreenPanel.add(southPanel, BorderLayout.SOUTH);
-        mainScreenPanel.add(westPanel, BorderLayout.WEST);
+    // MODIFIES: this
+    // EFFECTS: resizes north and south panels based on gameApp screen dimensions
+    public void resizeNorthAndSouthPanels() {
+        final float FRAME_TO_NORTH_PANEL_HEIGHT_RATIO = 0.276f;
+        final float FRAME_TO_SOUTH_PANEL_HEIGHT_RATIO = 0.111f;
 
-        cardLayout = new CardLayout();
-        cardPanel = new JPanel(cardLayout);
-        cardPanel.setPreferredSize(new Dimension(500, 600));
+        int northPanelHeight = Math.round(this.getHeight() * FRAME_TO_NORTH_PANEL_HEIGHT_RATIO);
+        int southPanelHeight = Math.round(this.getHeight() * FRAME_TO_SOUTH_PANEL_HEIGHT_RATIO);
 
-        frontMenuPanel = createFrontMenu();
-        levelSelectScrollPane = createLevelSelectMenu();
-        completedLevelSelectScrollPanel = createCompletedLevelSelectMenu();
-        levelHistoryViewPanel = new LevelHistoryViewPanel(player);
+        northPanel.setPreferredSize(new Dimension(0, northPanelHeight));
+        southPanel.setPreferredSize(new Dimension(0, southPanelHeight));
+    }
 
-        cardPanel.add(frontMenuPanel, "Main Menu");
-        cardPanel.add(levelSelectScrollPane, "Level Select");
-        cardPanel.add(completedLevelSelectScrollPanel, "Completed Level Select");
-        cardPanel.add(levelHistoryViewPanel, "Level History");
+    // MODIFIES: this
+    // EFFECTS: resizes titleLabel based on gameApp screen dimensions
+    public void resizeTitleLabel() {
+        final float FRAME_TO_TITLE_LABEL_HEIGHT_RATIO = 0.370f;
+        final float TITLE_LABEL_HEIGHT_TO_WIDTH_RATIO = 1.25f;
 
-        centerPanel.add(cardPanel);
+        int titleLabelHeight = Math.round(this.getHeight() * FRAME_TO_TITLE_LABEL_HEIGHT_RATIO);
+        int titleLabelWidth = Math.round(titleLabelHeight * TITLE_LABEL_HEIGHT_TO_WIDTH_RATIO);
 
-        ImageIcon originalBackIcon = new ImageIcon("src\\resources\\images\\Button.png");
+        titleLabel.setPreferredSize(new Dimension(titleLabelWidth, titleLabelHeight));
 
-        Image resizedBackImage = originalBackIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+        ImageIcon originalTitleIcon = new ImageIcon("src/resources/images/Game Title Icon.png");
 
-        ImageIcon backIcon = new ImageIcon(resizedBackImage);
+        Image resizedTitleImage = originalTitleIcon.getImage().getScaledInstance(titleLabelWidth, titleLabelHeight,
+                Image.SCALE_SMOOTH);
 
-        backButton = new JButton("Back");
-        backButton.setPreferredSize(new Dimension(100, 100));
-        backButton.setVisible(false);
-        backButton.setEnabled(false);
-        backButton.addActionListener(this);
+        titleLabel.setIcon(new ImageIcon(resizedTitleImage));
+    }
 
-        backButton.setHorizontalTextPosition(JLabel.CENTER);
-        backButton.setVerticalTextPosition(JLabel.CENTER); 
-        backButton.setIcon(backIcon);
-        backButton.setBackground(new Color(0, 0, 44));
-        backButton.setContentAreaFilled(false);
-        backButton.setBorderPainted(false);
-        backButton.setForeground(new Color(230, 230, 230));
-        backButton.setFont(new Font("DialogInput", Font.PLAIN, 15));
+    // MODIFIES: this
+    // EFFECTS: resizes backButton based on gameApp screen dimensions
+    public void resizeBackButton() {
+        final float FRAME_TO_BACK_BUTTON_HEIGHT_RATIO = 0.0926f;
 
-        layeredGamePane = new JLayeredPane();
-        layeredGamePane.setPreferredSize(new Dimension(1920, 1080));
+        int backButtonHeight = Math.round(this.getHeight() * FRAME_TO_BACK_BUTTON_HEIGHT_RATIO);
+        int backButtonWidth = backButtonHeight;
 
-        gameplayPanel = new GameplayPanel(player); // IMPORTANT
-        gameplayPanel.setBounds(0, 0, 1920, 1080);
+        backButton.setPreferredSize(new Dimension(backButtonWidth, backButtonHeight));
 
-        inGameMenuPanel = createInGameMenu();
-        inGameMenuPanel.setBounds(1920 / 2 - 700 / 2, 300, 700, 500);
-        inGameMenuPanel.setVisible(false);
-        inGameMenuPanel.setEnabled(false);
+        ImageIcon originalBackIcon = new ImageIcon("src/resources/images/Button.png");
 
-        layeredGamePane.add(inGameMenuPanel, JLayeredPane.PALETTE_LAYER);
-        layeredGamePane.add(gameplayPanel, JLayeredPane.DEFAULT_LAYER);
+        Image resizedBackImage = originalBackIcon.getImage().getScaledInstance(backButtonWidth, backButtonHeight,
+                Image.SCALE_SMOOTH);
 
-        this.setTitle(GAME_TITLE);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setSize(1920, 1080);
-        this.setResizable(false);
-        this.setLayout(new BorderLayout());
-        this.addKeyListener(this);
-        this.setVisible(true);
+        backButton.setIcon(new ImageIcon(resizedBackImage));
+    }
 
-        northPanel.setLayout(new BorderLayout());
-        northPanel.add(titleLabel);
+    // MODIFIES: this
+    // EFFECTS: resizes main panels based on gameApp screen dimensions
+    public void resizeMainPanels() {
+        final float FRAME_TO_MENU_PANEL_HEIGHT_RATIO = 0.555f;
+        final float MENU_PANEL_HEIGHT_TO_WIDTH_RATIO = 0.833f;
 
-        southPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 0));
-        southPanel.add(backButton);
+        final float FRAME_TO_IN_GAME_MENU_PANEL_HEIGHT_RATIO = 0.555f;
+        final float FRAME_TO_IN_GAME_MENU_PANEL_WIDTH_RATIO = 0.364f;
 
-        toMainMenu();
+        int screenHeight = this.getHeight();
+        int screenWidth = this.getWidth();
+
+        int inGameMenuPanelHeight = Math.round(this.getHeight() * FRAME_TO_IN_GAME_MENU_PANEL_HEIGHT_RATIO);
+        int inGameMenuPanelWidth = Math.round(this.getWidth() * FRAME_TO_IN_GAME_MENU_PANEL_WIDTH_RATIO);
+
+        int menuPanelHeight = Math.round(this.getHeight() * FRAME_TO_MENU_PANEL_HEIGHT_RATIO);
+        int menuPanelWidth = Math.round(menuPanelHeight * MENU_PANEL_HEIGHT_TO_WIDTH_RATIO);
+
+        frontMenuPanel.resizePanel(menuPanelWidth, menuPanelHeight);
+        levelSelectMenuPanel.resizePanel(menuPanelWidth, menuPanelHeight);
+        completedLevelSelectMenuPanel.resizePanel(menuPanelWidth, menuPanelHeight);
+        levelHistoryViewPanel.resizePanel(menuPanelWidth, menuPanelHeight);
+        mainScreenPanel.resizePanel(screenWidth, screenHeight);
+
+        if (currentLevel != null) {
+            gameplayPanel.resizePanel(screenWidth, screenHeight);
+        }
+
+        inGameMenuPanel.resizePanel(inGameMenuPanelWidth, inGameMenuPanelHeight);
+    }
+
+    @Override
+    public void componentMoved(ComponentEvent e) {
+
     }
 
     // MODIFIES: this
@@ -277,287 +502,14 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
         requestFocus();
     }
 
-    public void customizeMenuButton(JButton button, int width, int height) {
-        Image buttonImage = new ImageIcon("src\\resources\\images\\Menu Button.png").getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
-
-        ImageIcon buttonIcon = new ImageIcon(buttonImage);
-
-        button.setIcon(buttonIcon);
-        button.setHorizontalTextPosition(JLabel.CENTER);
-        button.setContentAreaFilled(false);
-        button.setBorderPainted(false);
-        button.setForeground(new Color(230, 230, 230));
-        button.setFont(new Font("DialogInput", Font.PLAIN, 18));
-    }
-
-    // MODIFIES: this
-    // EFFECTS: creates front menu panel and returns it
-    public JPanel createFrontMenu() {
-        final int BUTTON_WIDTH = 400;
-        final int BUTTON_HEIGHT = 100;
-
-        JPanel panel = new MenuPanel();
-
-        JButton playButton = new JButton("Play");
-        JButton completedLevelsButton = new JButton("Completed Levels");
-        JButton saveButton = new JButton("Save");
-        JButton loadButton = new JButton("Load");
-        JButton quitButton = new JButton("Quit");
-
-        playButton.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
-        completedLevelsButton.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
-        saveButton.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
-        loadButton.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
-        quitButton.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
-
-        customizeMenuButton(playButton, BUTTON_WIDTH, BUTTON_HEIGHT);
-        customizeMenuButton(completedLevelsButton, BUTTON_WIDTH, BUTTON_HEIGHT);
-        customizeMenuButton(saveButton, BUTTON_WIDTH, BUTTON_HEIGHT);
-        customizeMenuButton(loadButton, BUTTON_WIDTH, BUTTON_HEIGHT);
-        customizeMenuButton(quitButton, BUTTON_WIDTH, BUTTON_HEIGHT);
-
-        playButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                cardLayout.show(cardPanel, "Level Select");
-                backButton.setVisible(true);
-                backButton.setEnabled(true);
-                previousMenu = "Main Menu";
-            }
-        });
-
-        completedLevelsButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                cardLayout.show(cardPanel, "Completed Level Select");
-                backButton.setVisible(true);
-                backButton.setEnabled(true);
-                previousMenu = "Main Menu";
-
-                if (player.getCompletedLevelStats().size() != 0) {
-                    for (int i = 0; i < player.getCompletedLevelStats().size(); i++) {
-                        if (!completedLevelButtons[i].isVisible()) {
-                            completedLevelButtons[i].setVisible(true);
-                            completedLevelButtons[i].setEnabled(true);
-                        }
-                    }
-
-                    for (int i = player.getCompletedLevelStats().size(); i < levels.size(); i++) {
-                        if (completedLevelButtons[i].isVisible()) {
-                            completedLevelButtons[i].setVisible(false);
-                            completedLevelButtons[i].setEnabled(false);
-                        }
-                    }
-                }
-            }
-        });
-
-        saveButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                savePlayer();
-            }
-        });
-
-        loadButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                loadPlayer();
-            }
-        });
-
-        quitButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
-
-        panel.add(playButton);
-        panel.add(completedLevelsButton);
-        panel.add(saveButton);
-        panel.add(loadButton);
-        panel.add(quitButton);
-
-        return panel;
-    }
-
-    // MODIFIES: this
-    // EFFECTS: creates in game menu panel and returns it
-    public JPanel createInGameMenu() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-
-        panel.setPreferredSize(new Dimension(700, 600));
-
-        JPanel bottomPanel = new JPanel();
-        bottomPanel.setPreferredSize(new Dimension(1000, 200));
-        bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 100, 10));
-
-        inGameMenuLabel = new JLabel();
-        inGameMenuLabel.setPreferredSize(new Dimension(1000, 1000));
-        inGameMenuLabel.setHorizontalAlignment(JLabel.CENTER);
-
-        JButton retryButton = new JButton("Retry");
-        JButton levelsButton = new JButton("Levels");
-
-        retryButton.setPreferredSize(new Dimension(200, 100));
-        levelsButton.setPreferredSize(new Dimension(200, 100));
-
-        retryButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                currentLevel.reset();
-                player.setPosition(currentLevel.getStartPosition());
-                inGameMenuPanel.setVisible(false);
-                inGameMenuPanel.setEnabled(false);
-                requestFocus();
-                inGame = true;
-            }
-        });
-
-        levelsButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                inGameMenuPanel.setVisible(false);
-                inGameMenuPanel.setEnabled(false);
-                toMainMenu();
-            }
-        });
-
-        panel.add(inGameMenuLabel, BorderLayout.CENTER);
-        panel.add(bottomPanel, BorderLayout.SOUTH);
-        bottomPanel.add(retryButton);
-        bottomPanel.add(levelsButton);
-
-        return panel;
-    }
-
-    // MODIFIES: this
-    // EFFECTS: creates level select menu scroll pane and returns it
-    public JPanel createLevelSelectMenu() {
-        JPanel mainPanel = new MenuPanel();
-        mainPanel.setLayout(new FlowLayout(FlowLayout.CENTER,0,0));
-
-        JPanel scrollPanel = new JPanel();
-        scrollPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 40));
-        scrollPanel.setOpaque(false);
-
-        for (Level level : levels) {
-            JLayeredPane layeredPane = new JLayeredPane();
-            layeredPane.setPreferredSize(new Dimension(380, 500));
-
-            JPanel displayPanel = new LevelDisplayPanel(level.getName());
-            displayPanel.setBounds(0, 0, 380, 500);
-
-            JButton button = new JButton("Level " + (level.getLevelIndex() + 1));
-            button.setOpaque(false);
-            button.setContentAreaFilled(false);
-            button.setBorderPainted(false);
-            button.setBounds(0, 0, 380, 500);
-            levelButtons[level.getLevelIndex()] = button;
-
-            layeredPane.add(displayPanel);
-            layeredPane.add(button);
-
-            scrollPanel.add(layeredPane);
-
-            button.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    currentLevel = level;
-                    gameplayPanel.setCurrentLevel(level);
-                    player.setPosition(level.getStartPosition());
-                    toGameplay();
-                }
-            });
-        }
-
-        JScrollPane scrollPane = new JScrollPane(scrollPanel, JScrollPane.VERTICAL_SCROLLBAR_NEVER,
-                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        JScrollBar horizontalBar = scrollPane.getHorizontalScrollBar();
-        horizontalBar.setUI(new CustomScrollBar("src\\resources\\images\\Horizontal Scroll Bar.png"));
-        horizontalBar.setPreferredSize(new Dimension(10,26));
-        horizontalBar.setUnitIncrement(50);
-        scrollPane.setPreferredSize(new Dimension(490, 590));
-        scrollPane.setOpaque(false);
-        scrollPane.getViewport().setOpaque(false);
-        scrollPane.setBorder(null);
-
-        mainPanel.add(scrollPane);
-
-        return mainPanel;
-    }
-
-    // MODIFIES: this
-    // EFFECTS: creates completed level select menu scroll pane and returns it
-    public JPanel createCompletedLevelSelectMenu() {
-        JPanel mainPanel = new MenuPanel();
-        mainPanel.setLayout(new FlowLayout(FlowLayout.CENTER,0,10));
-
-        JPanel scrollPanel = new JPanel();
-        scrollPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
-        scrollPanel.setOpaque(false);
-
-        for (Level level : levels) {
-            JButton levelButton = new JButton("Level " + (level.getLevelIndex() + 1));
-            ImageIcon originalIcon = new ImageIcon("src\\resources\\images\\Level Button.png");
-
-            Image resizedImage = originalIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-    
-            ImageIcon levelIcon = new ImageIcon(resizedImage);
-            levelButton.setPreferredSize(new Dimension(100, 100));
-            levelButton.setIcon(levelIcon);
-            levelButton.setHorizontalTextPosition(JLabel.CENTER);
-            levelButton.setVerticalTextPosition(JLabel.CENTER); 
-            levelButton.setBackground(new Color(0, 0, 44));
-            levelButton.setContentAreaFilled(false);
-            levelButton.setBorderPainted(false);
-            levelButton.setForeground(new Color(230, 230, 230));
-            levelButton.setFont(new Font("DialogInput", Font.PLAIN, 15));
-            
-            completedLevelButtons[level.getLevelIndex()] = levelButton;
-            levelButton.setVisible(false);
-            levelButton.setEnabled(false);
-            scrollPanel.add(levelButton);
-
-            levelButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    cardLayout.show(cardPanel, "Level History");
-                    previousMenu = "Completed Level Select";
-                    String string = "<html>";
-
-                    for (LevelStats stats : player.getCompletedLevelStats().get(level.getLevelIndex())) {
-                        string += "<br>Attempt #" + stats.getAttemptNum() + "<br>Moves taken: "
-                                + stats.getLeastMovesTaken()
-                                + " moves" + "<br>Time taken: " + stats.getLeastTimeTaken() + " seconds<br>";
-                    }
-                    string += "<html>";
-
-                    levelHistoryViewPanel.setSelectedLevel(level);
-                    levelHistoryViewPanel.setText(string);
-                    levelHistoryViewPanel.resetSortByBox();
-                }
-            });
-        }
-
-        JScrollPane scrollPane = new JScrollPane(scrollPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        JScrollBar verticalBar = scrollPane.getVerticalScrollBar();
-        verticalBar.setUI(new CustomScrollBar("src\\resources\\images\\Vertical Scroll Bar.PNG"));
-        verticalBar.setPreferredSize(new Dimension(26,10));
-        verticalBar.setUnitIncrement(50);
-        scrollPane.setPreferredSize(new Dimension(490, 580));
-        scrollPane.setOpaque(false);
-        scrollPane.getViewport().setOpaque(false);
-        scrollPane.setBorder(null);
-
-        mainPanel.add(scrollPane);
-
-        return mainPanel;
-    }
-
     // EFFECTS: handles back button in main menu
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == backButton) {
-            cardLayout.show(cardPanel, previousMenu);
+            menuCardLayout.show(menuCardPanel, previousMenu);
 
             if (previousMenu.equals("Main Menu")) {
-                backButton.setVisible(false);
-                backButton.setEnabled(false);
+                disableBackButton();
             } else if (previousMenu.equals("Completed Level Select")) {
                 previousMenu = "Main Menu";
             }
@@ -570,8 +522,6 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
     // EFFECTS: constructs all levels
     private void constructAllLevels() {
         constructLevel1();
-        constructLevel2();
-        constructLevel3();
     }
 
     // MODIFIES: this
@@ -592,44 +542,12 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
         levels.add(level1);
     }
 
-    private void constructLevel2() {
-        Level level2 = new Level("level 2", 2, 4, 9, 4, 1, 8, 10, 0, -1);
-        level2.addProjectile(new Projectile(7, 6, -1, 0, 6));
-        level2.addProjectile(new Projectile(1, 4, 1, 0, 6));
-        level2.addWall(new Wall(0, 1, 0, 9));
-        level2.addWall(new Wall(8, 1, 8, 9));
-        level2.addWall(new Wall(1, 1, 3, 1));
-        level2.addWall(new Wall(5, 1, 7, 1));
-        level2.addWall(new Wall(1, 9, 3, 9));
-        level2.addWall(new Wall(5, 9, 7, 9));
-        level2.addWall(new Wall(3, 0, 5, 0));
-        level2.addWall(new Wall(3, 10, 5, 10));
-
-        levels.add(level2);
-    }
-
-    private void constructLevel3() {
-        Level level3 = new Level("level 3", 3, 4, 9, 4, 1, 8, 10, 0, -1);
-        level3.addProjectile(new Projectile(7, 6, -1, 0, 6));
-        level3.addProjectile(new Projectile(1, 4, 1, 0, 6));
-        level3.addWall(new Wall(0, 1, 0, 9));
-        level3.addWall(new Wall(8, 1, 8, 9));
-        level3.addWall(new Wall(1, 1, 3, 1));
-        level3.addWall(new Wall(5, 1, 7, 1));
-        level3.addWall(new Wall(1, 9, 3, 9));
-        level3.addWall(new Wall(5, 9, 7, 9));
-        level3.addWall(new Wall(3, 0, 5, 0));
-        level3.addWall(new Wall(3, 10, 5, 10));
-
-        levels.add(level3);
-    }
-
     // Referenced from the JsonSerialization Demo
     // https://github.students.cs.ubc.ca/CPSC210/JsonSerializationDemo
 
     // MODIFIES: this
     // EFFECTS: saves the player to file
-    private void savePlayer() {
+    public void savePlayer() {
         try {
             jsonWriter.open();
             jsonWriter.write(player);
@@ -645,11 +563,9 @@ public class GameApp extends JFrame implements ActionListener, KeyListener {
 
     // MODIFIES: this
     // EFFECTS: loads player from file
-    private void loadPlayer() {
+    public void loadPlayer() {
         try {
             player = jsonReader.read();
-            gameplayPanel.setPlayer(player);
-            levelHistoryViewPanel.setPlayer(player);
             // TODO: set player for all panels (if needed)
             System.out.println("Loaded from " + JSON_STORE);
         } catch (IOException e) {
