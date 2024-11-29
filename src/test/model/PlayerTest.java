@@ -88,10 +88,10 @@ public class PlayerTest {
         List<List<LevelStats>> statsList = p2.getCompletedLevelStats();
 
         List<LevelStats> level1History = statsList.get(l1.getLevelIndex());
-        LevelStats level1Stat = level1History.getFirst();
+        LevelStats level1Stat = level1History.get(0);
 
         List<LevelStats> level2History = statsList.get(l2.getLevelIndex());
-        LevelStats level2Stat = level2History.getFirst();
+        LevelStats level2Stat = level2History.get(0);
 
         assertEquals(level1Stat.getName(), l1.getName());
         assertEquals(level1Stat.getLeastMovesTaken(), l1.getMovesTaken());
@@ -104,9 +104,9 @@ public class PlayerTest {
 
         p2.addCompletedLevelStats(stats, 2);
 
-        assertEquals(statsList.get(2).getFirst().getName(), stats.getName());
-        assertEquals(statsList.get(2).getFirst().getLeastMovesTaken(), stats.getLeastMovesTaken());
-        assertEquals(statsList.get(2).getFirst().getLeastTimeTaken(), stats.getLeastTimeTaken());
+        assertEquals(statsList.get(2).get(0).getName(), stats.getName());
+        assertEquals(statsList.get(2).get(0).getLeastMovesTaken(), stats.getLeastMovesTaken());
+        assertEquals(statsList.get(2).get(0).getLeastTimeTaken(), stats.getLeastTimeTaken());
     }
 
     @Test

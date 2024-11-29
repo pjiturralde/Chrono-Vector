@@ -14,9 +14,11 @@ import static org.junit.jupiter.api.Assertions.*;
 // https://github.students.cs.ubc.ca/CPSC210/JsonSerializationDemo
 
 class JsonWriterTest extends JsonTest {
-    //NOTE TO CPSC 210 STUDENTS: the strategy in designing tests for the JsonWriter is to
-    //write data to a file and then use the reader to read it back in and check that we
-    //read in a copy of what was written out.
+    // NOTE TO CPSC 210 STUDENTS: the strategy in designing tests for the JsonWriter
+    // is to
+    // write data to a file and then use the reader to read it back in and check
+    // that we
+    // read in a copy of what was written out.
 
     @Test
     void testWriterInvalidFile() {
@@ -59,10 +61,10 @@ class JsonWriterTest extends JsonTest {
 
             JsonReader reader = new JsonReader("./data/testWriterGeneralCompletedLevelStats.json");
             player = reader.read();
-            List<List<LevelStats>> statsList = player.getCompletedLevelStats(); 
+            List<List<LevelStats>> statsList = player.getCompletedLevelStats();
             assertEquals(2, statsList.size());
-            checkLevelStats("level S", -1, -1, statsList.get(0).getFirst());
-            checkLevelStats("level L", 3, 2.0, statsList.get(1).getFirst());
+            checkLevelStats("level S", -1, -1, statsList.get(0).get(0));
+            checkLevelStats("level L", 3, 2.0, statsList.get(1).get(0));
         } catch (IOException e) {
             fail("Exception should not have been thrown");
         }
