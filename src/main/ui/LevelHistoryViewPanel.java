@@ -174,9 +174,10 @@ public class LevelHistoryViewPanel extends MenuPanel implements ActionListener {
     public String listTopAndBottomLevels() {
         Player player = gameApp.getPlayer();
 
-        LevelStats statsTop = player.getCompletedLevelStats().get(selectedLevel.getLevelIndex()).get(0);
-        LevelStats statsBottom = player.getCompletedLevelStats().get(selectedLevel.getLevelIndex())
-                .get(player.getCompletedLevelStats().get(selectedLevel.getLevelIndex()).size() - 1);
+        LevelStats[] topAndBottomHistoryResults = player.getTopAndBottomHistoryResults(selectedLevel.getLevelIndex());
+
+        LevelStats statsTop = topAndBottomHistoryResults[1];
+        LevelStats statsBottom = topAndBottomHistoryResults[0];
 
         String levelHistory = "<html><br>Attempt #" + statsTop.getAttemptNum() + "<br>Moves taken: "
                 + statsTop.getLeastMovesTaken()
