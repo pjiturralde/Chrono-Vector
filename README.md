@@ -26,7 +26,7 @@ To me this is a good opportunity to both create a puzzle I find interesting and 
 ## Instructions for End User
 
 - You can add level stats to your Player's level history by successfully completing a level.
-- You can highlight the top and bottom results of your Player's level history by pressing the Top and bottom results only checkbox.
+- You can clear your level history by clicking the clear button at the top of the level history panel.
 - You can sort your level history by using the combo box in the top right of your level history panel.
 - You can find a visual component anywhere in the main menu of this game, such as the title icon, or the menu buttons.
 - You can save the state of the application to file in the front main menu.
