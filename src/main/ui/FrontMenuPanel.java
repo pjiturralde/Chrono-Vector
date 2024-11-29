@@ -87,6 +87,31 @@ public class FrontMenuPanel extends MenuPanel implements ActionListener {
     }
 
     // MODIFIES: this, gameApp
+    // EFFECTS: diables and enables completedLevelButtons based on
+    // gameApp.getPlayer().getCompletedLevelStats()
+    public void refreshCompletedLevelButtons() {
+        Player player = gameApp.getPlayer();
+        CompletedLevelSelectMenuPanel completedLevelSelectMenuPanel = gameApp
+                .getCompletedLevelSelectMenuPanel();
+
+        for (int i = 0; i < player.getCompletedLevelStats().size(); i++) {
+            JButton completedLevelButton = completedLevelSelectMenuPanel.getCompletedLevelButtons()[i];
+            if (!completedLevelButton.isVisible()) {
+                completedLevelButton.setVisible(true);
+                completedLevelButton.setEnabled(true);
+            }
+        }
+
+        for (int i = player.getCompletedLevelStats().size(); i < gameApp.getLevels().size(); i++) {
+            JButton completedLevelButton = completedLevelSelectMenuPanel.getCompletedLevelButtons()[i];
+            if (completedLevelButton.isVisible()) {
+                completedLevelButton.setVisible(false);
+                completedLevelButton.setEnabled(false);
+            }
+        }
+    }
+
+    // MODIFIES: this, gameApp
     // EFFECTS: handles buttons
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -99,27 +124,8 @@ public class FrontMenuPanel extends MenuPanel implements ActionListener {
             gameApp.enableBackButton();
             gameApp.setPreviousMenu("Main Menu");
 
-            Player player = gameApp.getPlayer();
-
-            if (player.getCompletedLevelStats().size() > 0) {
-                CompletedLevelSelectMenuPanel completedLevelSelectMenuPanel = gameApp
-                        .getCompletedLevelSelectMenuPanel();
-
-                for (int i = 0; i < player.getCompletedLevelStats().size(); i++) {
-                    JButton completedLevelButton = completedLevelSelectMenuPanel.getCompletedLevelButtons()[i];
-                    if (!completedLevelButton.isVisible()) {
-                        completedLevelButton.setVisible(true);
-                        completedLevelButton.setEnabled(true);
-                    }
-                }
-
-                for (int i = player.getCompletedLevelStats().size(); i < gameApp.getLevels().size(); i++) {
-                    JButton completedLevelButton = completedLevelSelectMenuPanel.getCompletedLevelButtons()[i];
-                    if (completedLevelButton.isVisible()) {
-                        completedLevelButton.setVisible(false);
-                        completedLevelButton.setEnabled(false);
-                    }
-                }
+            if (gameApp.getPlayer().getCompletedLevelStats().size() > 0) {
+                refreshCompletedLevelButtons();
             }
         } else if (e.getSource() == saveButton) {
             gameApp.savePlayer();
@@ -128,6 +134,5 @@ public class FrontMenuPanel extends MenuPanel implements ActionListener {
         } else if (e.getSource() == quitButton) {
             System.exit(0);
         }
-
     }
 }
