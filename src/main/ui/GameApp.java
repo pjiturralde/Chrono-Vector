@@ -1,6 +1,5 @@
 package ui;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.awt.*;
 import javax.swing.*;
