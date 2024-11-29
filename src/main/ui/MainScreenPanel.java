@@ -11,33 +11,66 @@ import java.util.Random;
 
 // Main Screen Panel
 public class MainScreenPanel extends JPanel implements ActionListener {
-    private static final int SCREEN_WIDTH = 1920;
-    private static final int SCREEN_HEIGHT = 1080;
+    private int screenWidth;
+    private int screenHeight;
     private Vector2[] smallParticles = new Vector2[100];
     private Vector2[] mediumParticles = new Vector2[100];
-    Random ran;
-    Timer timer;
+    private Random ran;
+    private Timer timer;
 
-    // MODIFIES: this
-    // EFFECTS: constructs Main Screen Panel
+    // EFFECTS: constructs MainScreenPanel
     MainScreenPanel() {
         this.setLayout(new BorderLayout());
+
+        screenWidth = 1920;
+        screenHeight = 1080;
+
         ran = new Random();
 
         for (int i = 0; i < smallParticles.length; i++) {
-            int randomY = ran.nextInt(SCREEN_HEIGHT + 1);
-            int randomX = ran.nextInt(SCREEN_WIDTH + 1);
+            int randomY = ran.nextInt(screenHeight + 1);
+            int randomX = ran.nextInt(screenWidth + 1);
             smallParticles[i] = new Vector2(randomX, randomY);
         }
 
         for (int i = 0; i < mediumParticles.length; i++) {
-            int randomY = ran.nextInt(SCREEN_HEIGHT + 1);
-            int randomX = ran.nextInt(SCREEN_WIDTH + 1);
+            int randomY = ran.nextInt(screenHeight + 1);
+            int randomX = ran.nextInt(screenWidth + 1);
             mediumParticles[i] = new Vector2(randomX, randomY);
         }
 
         timer = new Timer(1000 / 60, this);
         timer.start();
+    }
+
+    // MODIFIES: this
+    // EFFECTS: resizes panel to given width and height
+    public void resizePanel(int width, int height) {
+        for (Vector2 p : smallParticles) {
+            double screenYRatio = (double) p.getY() / screenHeight;
+            double screenXRatio = (double) p.getX() / screenWidth;
+
+            int particleWidth = (int) Math.round(width * screenXRatio);
+            int particleHeight = (int) Math.round(height * screenYRatio);
+
+            p.setVector(particleWidth, particleHeight);
+        }
+
+        for (Vector2 p : mediumParticles) {
+            double screenYRatio = (double) p.getY() / screenHeight;
+            double screenXRatio = (double) p.getX() / screenWidth;
+
+            int particleWidth = (int) Math.round(width * screenXRatio);
+            int particleHeight = (int) Math.round(height * screenYRatio);
+
+            p.setVector(particleWidth, particleHeight);
+        }
+
+        screenWidth = width;
+        screenHeight = height;
+
+        revalidate();
+        repaint();
     }
 
     // EFFECTS: paints level and player onto screen
@@ -63,8 +96,8 @@ public class MainScreenPanel extends JPanel implements ActionListener {
         repaint();
 
         for (Vector2 p : smallParticles) {
-            if (p.getX() > SCREEN_WIDTH) {
-                int randomY = ran.nextInt(SCREEN_HEIGHT + 1);
+            if (p.getX() > screenWidth) {
+                int randomY = ran.nextInt(screenHeight + 1);
                 p.setVector(-2, randomY);
             } else {
                 p.setVector(p.getX() + 3, p.getY());
@@ -72,8 +105,8 @@ public class MainScreenPanel extends JPanel implements ActionListener {
         }
 
         for (Vector2 p : mediumParticles) {
-            if (p.getX() > SCREEN_WIDTH) {
-                int randomY = ran.nextInt(SCREEN_HEIGHT + 1);
+            if (p.getX() > screenWidth) {
+                int randomY = ran.nextInt(screenHeight + 1);
                 p.setVector(0, randomY);
             } else {
                 p.setVector(p.getX() + 3, p.getY());
