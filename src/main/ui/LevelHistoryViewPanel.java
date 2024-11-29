@@ -18,6 +18,7 @@ public class LevelHistoryViewPanel extends MenuPanel implements ActionListener {
 
     private JPanel scrollPanel;
     private JScrollPane scrollPane;
+    private JButton clearButton;
     private JLabel levelHistoryLabel;
     private JLabel levelNameLabel;
     private JComboBox<String> sortByBox;
@@ -41,9 +42,7 @@ public class LevelHistoryViewPanel extends MenuPanel implements ActionListener {
 
         scrollPane = createScrollPane(scrollPanel);
 
-        topAndBottomCheckBox = new JCheckBox();
-        topAndBottomCheckBox.setOpaque(false);
-        topAndBottomCheckBox.addActionListener(this);
+        topAndBottomCheckBox = createTopAndBottomCheckBox();
 
         JLabel topAndBottomLabel = createLabel("Top and bottom results only:");
 
@@ -55,12 +54,25 @@ public class LevelHistoryViewPanel extends MenuPanel implements ActionListener {
 
         levelNameLabel = createLevelNameLabel();
 
+        clearButton = new JButton("Clear");
+        clearButton.addActionListener(this);
+
+        this.add(clearButton);
         this.add(levelNameLabel);
         this.add(topAndBottomLabel);
         this.add(topAndBottomCheckBox);
         this.add(sortLabel);
         this.add(sortByBox);
         this.add(scrollPane);
+    }
+
+    // EFFECTS: creates top and bottom checkbox then returns it
+    public JCheckBox createTopAndBottomCheckBox() {
+        JCheckBox checkbox = new JCheckBox();
+        checkbox.setOpaque(false);
+        checkbox.addActionListener(this);
+
+        return checkbox;
     }
 
     // MODIFIES: this
@@ -174,10 +186,9 @@ public class LevelHistoryViewPanel extends MenuPanel implements ActionListener {
     public String listTopAndBottomLevels() {
         Player player = gameApp.getPlayer();
 
-        LevelStats[] topAndBottomHistoryResults = player.getTopAndBottomHistoryResults(selectedLevel.getLevelIndex());
-
-        LevelStats statsTop = topAndBottomHistoryResults[1];
-        LevelStats statsBottom = topAndBottomHistoryResults[0];
+        LevelStats statsTop = player.getCompletedLevelStats().get(selectedLevel.getLevelIndex()).get(0);
+        LevelStats statsBottom = player.getCompletedLevelStats().get(selectedLevel.getLevelIndex())
+                .get(player.getCompletedLevelStats().get(selectedLevel.getLevelIndex()).size() - 1);
 
         String levelHistory = "<html><br>Attempt #" + statsTop.getAttemptNum() + "<br>Moves taken: "
                 + statsTop.getLeastMovesTaken()
@@ -220,6 +231,9 @@ public class LevelHistoryViewPanel extends MenuPanel implements ActionListener {
             } else {
                 levelHistoryLabel.setText(listLevelHistory());
             }
+        } else if (e.getSource() == clearButton) {
+            player.clearLevelHistory(selectedLevel.getLevelIndex());
+            levelHistoryLabel.setText("");
         }
     }
 }
