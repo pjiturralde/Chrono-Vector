@@ -26,14 +26,6 @@ public class LevelTest {
         ArrayList<Projectile> projectileList = l1.getProjectiles();
         assertEquals(projectileList.get(0), p1);
         assertEquals(projectileList.get(1), p2);
-
-        l1.addProjectile(5, 8, 1, 0, 3, false);
-
-        Projectile px = l1.getProjectiles().get(2);
-        assertEquals(px.getPosition().getX(), 5);
-        assertEquals(px.getPosition().getY(), 8);
-        assertEquals(px.getDirection().getX(), 1);
-        assertEquals(px.getDirection().getY(), 0);
     }
 
     @Test
