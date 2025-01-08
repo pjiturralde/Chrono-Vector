@@ -45,7 +45,7 @@ public class LevelHistoryViewPanel extends MenuPanel implements ActionListener {
 
         JLabel topAndBottomLabel = createLabel("Top and bottom results only:");
 
-        String[] sortOptions = { "Moves then Time", "Time then Moves", "Attempts" };
+        String[] sortOptions = { "Moves then Time", "Time then Moves", "Attempt" };
         sortByBox = new JComboBox<String>(sortOptions);
         sortByBox.addActionListener(this);
 
@@ -225,7 +225,7 @@ public class LevelHistoryViewPanel extends MenuPanel implements ActionListener {
                 player.sortCompletedlevelStats(selectedLevel.getLevelIndex(), MOVES_THEN_TIME_SORT);
             } else if (selected.equals("Time then Moves")) {
                 player.sortCompletedlevelStats(selectedLevel.getLevelIndex(), TIME_THEN_MOVES_SORT);
-            } else if (selected.equals("Attempts")) {
+            } else if (selected.equals("Attempt")) {
                 player.sortCompletedlevelStats(selectedLevel.getLevelIndex(), ATTEMPT_SORT);
             }
 
