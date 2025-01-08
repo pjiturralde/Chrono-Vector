@@ -33,8 +33,30 @@ public class Level {
         this.levelIndex = levelNumber - 1;
         this.startPosition = new Vector2(startPosX, startPosY);
         this.goalPosition = new Vector2(goalPosX, goalPosY);
-        this.timeDirection = new Vector2(timeDirX, timeDirY);
         this.size = new Vector2(sizeX, sizeY);
+        this.timeDirection = new Vector2(timeDirX, timeDirY);
+        this.projectileList = new ArrayList<Projectile>();
+        this.wallList = new ArrayList<Wall>();
+        this.levelLost = false;
+        this.levelComplete = false;
+        this.movesTaken = 0;
+        this.timeStarted = 0;
+        this.timeTaken = 0;
+    }
+
+    // REQUIRES: either timeDirX or timeDirY has to be 0 and
+    // Vector2(timeDirX, timeDirY) needs to have a magnitude of exactly 1
+    // eg. (0,1), (1,0), (-1, 0), ...
+    // EFFECTS: constructs a Level object with an empty projectileList and empty
+    // wallList
+    public Level(String name, int levelNumber, Vector2 startPosition, Vector2 goalPosition, Vector2 size,
+            Vector2 timeDirection) {
+        this.name = name;
+        this.levelIndex = levelNumber - 1;
+        this.startPosition = new Vector2(startPosition.getX(), startPosition.getY());
+        this.goalPosition = new Vector2(goalPosition.getX(), goalPosition.getY());
+        this.size = new Vector2(size.getX(), size.getY());
+        this.timeDirection = new Vector2(timeDirection.getX(), timeDirection.getY());
         this.projectileList = new ArrayList<Projectile>();
         this.wallList = new ArrayList<Wall>();
         this.levelLost = false;
@@ -51,14 +73,6 @@ public class Level {
         projectileList.add(p);
     }
 
-    // REQUIRES: position of Projectile must be in bounds of the Level size
-    // MODIFIES: this
-    // EFFECT: adds Projectile object to list of Projectiles
-    public void addProjectile(int startPosX, int startPosY, int dirX, int dirY, int range, boolean isBouncy) {
-        Projectile p = new Projectile(startPosX, startPosY, dirX, dirY, range, isBouncy);
-        projectileList.add(p);
-    }
-
     // REQUIRES: position of Wall must be in bounds of the Level size
     // MODIFIES: this
     // EFFECT: adds Wall object to list of Walls
@@ -69,7 +83,8 @@ public class Level {
     // REQUIRES: either moveDirX or moveDirY has to be 0 and
     // Vector2(timeDirX, timeDirY) needs to have a magnitude of exactly 1
     // eg. (0,1), (1,0), (-1, 0), ...
-    // EFFECTS: checks if player moves in the same direction as timeDirection
+    // EFFECTS: checks if player moves in the same direction as timeDirection and
+    // proceeds accordingly
     public void checkPlayerMovement(int moveDirX, int moveDirY) {
         Vector2 playerMovementDir = new Vector2(moveDirX, moveDirY);
         Vector2 oppositeTimeDir = Vector2.scale(timeDirection, -1);
@@ -236,11 +251,21 @@ public class Level {
         return timeDirection;
     }
 
+    // EFFECTS: sets time direction to given x and y
+    public void setTimeDirection(int x, int y) {
+        this.timeDirection = new Vector2(x, y);
+    }
+
+    // EFFECTS: sets time direction to given Vector2
+    public void setTimeDirection(Vector2 dir) {
+        this.timeDirection = new Vector2(dir.getX(), dir.getY());
+    }
+
     // EFFECTS: returns if the Level has been lost
     public boolean lost() {
         return levelLost;
     }
-    
+
     // EFFECTS: returns if the Level has been completed
     public boolean completed() {
         return levelComplete;
