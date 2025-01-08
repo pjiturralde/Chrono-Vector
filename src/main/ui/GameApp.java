@@ -18,6 +18,7 @@ import java.io.IOException;
 import model.EventLog;
 import model.Level;
 import model.Projectile;
+import model.Vector2;
 import model.Wall;
 import persistence.JsonReader;
 import persistence.JsonWriter;
@@ -569,17 +570,17 @@ public class GameApp extends JFrame implements ActionListener, KeyListener, Comp
     // MODIFIES: this
     // EFFECTS: constructs level 1
     private void constructLevel1() {
-        Level level1 = new Level("level 1", 1, 4, 9, 4, 1, 8, 10, 0, -1);
-        level1.addProjectile(new Projectile(7, 6, -1, 0, 6));
-        level1.addProjectile(new Projectile(1, 4, 1, 0, 6));
-        level1.addWall(new Wall(0, 1, 0, 9));
-        level1.addWall(new Wall(8, 1, 8, 9));
-        level1.addWall(new Wall(1, 1, 3, 1));
-        level1.addWall(new Wall(5, 1, 7, 1));
-        level1.addWall(new Wall(1, 9, 3, 9));
-        level1.addWall(new Wall(5, 9, 7, 9));
-        level1.addWall(new Wall(3, 0, 5, 0));
-        level1.addWall(new Wall(3, 10, 5, 10));
+        Level level1 = new Level("level 1", 1, new Vector2(4, 9), new Vector2(4, 1), new Vector2(8, 10), new Vector2(0, -1));
+        level1.addProjectile(new Projectile(new Vector2(7, 6), new Vector2(-1, 0), 6));
+        level1.addProjectile(new Projectile(new Vector2(1, 4), new Vector2(1, 0), 6));
+        level1.addWall(new Wall(new Vector2(0, 1), new Vector2(0, 9)));
+        level1.addWall(new Wall(new Vector2(8, 1), new Vector2(8, 9)));
+        level1.addWall(new Wall(new Vector2(1, 1), new Vector2(3, 1)));
+        level1.addWall(new Wall(new Vector2(5, 1), new Vector2(7, 1)));
+        level1.addWall(new Wall(new Vector2(1, 9), new Vector2(3, 9)));
+        level1.addWall(new Wall(new Vector2(5, 9), new Vector2(7, 9)));
+        level1.addWall(new Wall(new Vector2(3, 0), new Vector2(5, 0)));
+        level1.addWall(new Wall(new Vector2(3, 10), new Vector2(5, 10)));
 
         levels.add(level1);
     }
