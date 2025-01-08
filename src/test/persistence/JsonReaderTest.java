@@ -45,7 +45,7 @@ public class JsonReaderTest extends JsonTest {
             List<List<LevelStats>> statsList = player.getCompletedLevelStats();
             assertEquals(2, statsList.get(0).size());
             checkLevelStats("level Z", 2, 3.0, statsList.get(0).get(0));
-            checkLevelStats("level F", 20, 6.3, statsList.get(0).get(statsList.size() - 1));
+            checkLevelStats("level F", 20, 6.3, statsList.get(0).get(statsList.get(0).size() - 1));
         } catch (IOException e) {
             fail("Couldn't read from file");
         }
