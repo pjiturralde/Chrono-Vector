@@ -1,35 +1,34 @@
 package model;
 
 // A class representing a projectile with a position, startPosition, endPosition, 
-// directionVector, startDirection, and isBouncy bool
+// and directionVector
 public class Projectile {
     private Vector2 position;
     private Vector2 startPosition;
     private Vector2 endPosition;
     private Vector2 directionVector;
-    private Vector2 startDirection;
-    private boolean isBouncy;
 
     // REQUIRES: dirX and dirY can't be zero at the same time and
     // either dirX or dirY has to be 0 or both need to have the same magnitude
     // range > 0
     // EFFECTS: constructs a Projectile object and calculates the endPosition
-    public Projectile(int startPosX, int startPosY, int dirX, int dirY, int range, boolean isBouncy) {
+    public Projectile(int startPosX, int startPosY, int dirX, int dirY, int range) {
         this.position = new Vector2(startPosX, startPosY);
         this.startPosition = new Vector2(startPosX, startPosY);
         this.endPosition = new Vector2(startPosX + dirX * range, startPosY + dirY * range);
         this.directionVector = new Vector2(dirX, dirY);
-        this.startDirection = new Vector2(dirX, dirY);
-        this.isBouncy = isBouncy;
     }
 
     // REQUIRES: dirX and dirY can't be zero at the same time and
     // either dirX or dirY has to be 0 or both need to have the same magnitude
     // range > 0
-    // EFFECTS: constructs a Projectile object, calculates the endPosition and sets
-    // isBouncy to false
-    public Projectile(int startPosX, int startPosY, int dirX, int dirY, int range) {
-        this(startPosX, startPosY, dirX, dirY, range, false);
+    // EFFECTS: constructs a Projectile object and calculates the endPosition
+    public Projectile(Vector2 startPosition, Vector2 direction, int range) {
+        this.position = new Vector2(startPosition.getX(), startPosition.getY());
+        this.startPosition = new Vector2(startPosition.getX(), startPosition.getY());
+        this.endPosition = new Vector2(startPosition.getX() + direction.getX() * range,
+                startPosition.getY() + direction.getY() * range);
+        this.directionVector = new Vector2(direction.getX(), direction.getY());
     }
 
     // REQUIRES: direction cannot be a zero vector
@@ -41,40 +40,27 @@ public class Projectile {
 
     // MODIFIES: this
     // EFFECTS: moves Projectile forwards depending on direction and speed
-    // if isBouncy then Projectile will bounce when it goes past its endpoint and
-    // if not isBouncy then it will return to its start position
+    // if it hits a Wall then it will return to its start position
     public void moveForward() {
         position.add(directionVector);
         if (isPastEndOrStart()) {
-            if (isBouncy) {
-                directionVector.rescale(-1);
-                position.add(Vector2.scale(directionVector, 2));
-            } else {
-                position.setVector(startPosition);
-            }
+            position.setVector(startPosition);
         }
     }
 
     // MODIFIES: this
     // EFFECTS: moves Projectile backwards depending on direction and speed
-    // if isBouncy then Projectile will bounce when it goes past its startpoint and
-    // if not isBouncy then it will return to its end position
+    // if it hits a Wall then it will return to its end position
     public void moveBackward() {
         position.subtract(directionVector);
         if (isPastEndOrStart()) {
-            if (isBouncy) {
-                directionVector.rescale(-1);
-                position.subtract(Vector2.scale(directionVector, 2));
-            } else {
-                position.setVector(endPosition);
-            }
+            position.setVector(endPosition);
         }
     }
 
     // MODIFIES: this
-    // EFFECTS: sets the Projectile's position and direction to default
+    // EFFECTS: sets the Projectile's position to default
     public void reset() {
-        this.directionVector.setVector(startDirection);
         this.position.setVector(startPosition);
     }
 
