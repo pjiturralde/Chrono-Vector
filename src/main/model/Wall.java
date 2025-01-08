@@ -10,6 +10,12 @@ public class Wall {
         this.startPoint = new Vector2(startPosX, startPosY);
         this.endPoint = new Vector2(endPosX, endPosY);
     }
+    
+    // EFFECTS: constructs a Wall object
+    public Wall(Vector2 startPosition, Vector2 endPosition) {
+        this.startPoint = new Vector2(startPosition.getX(), startPosition.getY());
+        this.endPoint = new Vector2(endPosition.getX(), endPosition.getY());
+    }
 
     // EFFECTS: returns start point vector
     public Vector2 getStartPoint() {
